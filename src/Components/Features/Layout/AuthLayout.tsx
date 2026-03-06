@@ -1,9 +1,10 @@
 import { Plane } from 'lucide-react'
-import { Outlet, useLocation } from 'react-router';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import Tab from '../../../Utils/Components/Tabs/Tab';
 
 function AuthLayout() {
     const {pathname} = useLocation();
+    const navigator = useNavigate();
 
   return (
     <div>
@@ -17,7 +18,9 @@ function AuthLayout() {
         </div>
         
         <div className='w-[30%] m-auto mb-20'>
-            <Tab options={['Sign In', 'Create Account']} current={pathname.includes('sign-in') ? 'Sign In' : 'Create Account'} />
+            <Tab options={['Sign In', 'Create Account']} onclick={(e)=> {
+                navigator((e.currentTarget.id  === 'Sign In' ? '/sign-in' : '/create-account'))
+                }} current={pathname.includes('sign-in') ? 'Sign In' : 'Create Account'} />
              <Outlet/>
         </div>
         
