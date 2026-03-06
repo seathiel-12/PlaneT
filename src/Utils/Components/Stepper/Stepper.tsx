@@ -3,16 +3,27 @@ import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import clsx from 'clsx';
 import ColorSlider from '../Slider/Slider';
+import { Check } from 'lucide-react';
 
-const steps = ['Search', 'Search Flight', 'Passengers', 'Payment'];
 
-export default function HorizontalLinearStepper() {
+export type step = {
+  label: string,
+  render: ()=> React.ReactNode,
+  onNext: ()=> void,
+  onBack: ()=> void,
+}
+
+
+type stepperProps = {
+  steps : step[] 
+}
+const LinearStepper: React.FC<stepperProps> = ( {steps} ) => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set<number>());
+  const [level, setlevel] = React.useState(0);  
+  const sliderIncrease = 100 / steps.length;
 
   const isStepOptional = (step: number) => {
     return step === -1;
@@ -28,6 +39,7 @@ export default function HorizontalLinearStepper() {
       newSkipped = new Set(newSkipped.values());
       newSkipped.delete(activeStep);
     }
+    setlevel((level) => level + (100 / steps.length));
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped(newSkipped);
@@ -35,6 +47,8 @@ export default function HorizontalLinearStepper() {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setlevel((level) => level - (100 / steps.length));
+
   };
 
   const handleSkip = () => {
@@ -43,6 +57,7 @@ export default function HorizontalLinearStepper() {
       // it should never occur unless someone's actively trying to break something.
       throw new Error("You can't skip a step that isn't optional.");
     }
+
 
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setSkipped((prevSkipped) => {
@@ -54,12 +69,13 @@ export default function HorizontalLinearStepper() {
 
   const handleReset = () => {
     setActiveStep(0);
+    setlevel(0);
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Stepper activeStep={activeStep}  connector={<hr className='min-w-20 w-20 border-gray-300 border-[0.5px] ml-3 mr-18'  />}>
-        {steps.map((label, index) => {
+    <Box>
+      <Stepper activeStep={activeStep}  connector={<hr className='border-gray-300 border-[0.5px] w-17 ml-4 mr-12'/>} style={{margin:'auto', minWidth: 'max-content', width: '100%'}}>
+        {steps.map(( {label} , index) => {
           const stepProps: { completed?: boolean } = {};
           const labelProps: {
             optional?: React.ReactNode;
@@ -74,15 +90,15 @@ export default function HorizontalLinearStepper() {
           }
           return (
             <Step key={label} {...stepProps} >
-              <StepLabel {...labelProps}  icon={<div className={ (stepProps.completed ? 'bg-(--sb-blue-250)' : 'border-2 border-(--sb-blue-250) text-(--sb-blue-250)') + ' rounded-full w-full px-3.5 py-1.5'}>{index + 1}</div>} ><span className='text-[16px]'>{label}</span></StepLabel>
+              <StepLabel {...labelProps}  icon={ activeStep > index ? <div className='rounded-full p-2 bg-(--sb-blue-250)'><Check stroke='white'/></div>  : <div className={ 'border-2 border-(--sb-blue-250) text-(--sb-blue-250) rounded-full w-full px-3.5 py-1.5'}>{index + 1}</div> } ><span style={{color: activeStep > index ? 'var(--sb-blue-250)' : 'black'}} className='text-[15px] min-w-max'>{label}</span></StepLabel>
             </Step>
           );
         })}
       </Stepper>
       
-      <ColorSlider level={20} />
+      <ColorSlider from={sliderIncrease * (activeStep - 1)} to={level}  />
 
-      {activeStep === steps.length ? (
+      {/* {activeStep === steps.length ? (
         <React.Fragment>
           <Typography sx={{ mt: 2, mb: 1 }}>
             All steps completed - you&apos;re finished
@@ -115,7 +131,9 @@ export default function HorizontalLinearStepper() {
             </Button>
           </Box>
         </React.Fragment>
-      )}
+      )} */}
     </Box>
   );
 }
+
+export default LinearStepper;
