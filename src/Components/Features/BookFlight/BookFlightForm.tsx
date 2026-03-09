@@ -72,7 +72,7 @@ const BookFlightForm = () => {
                     <span>Passenger</span>
                 </label>
                 <select value={flightInfos.passengersCount} onChange={(e)=>setFlightInfos({...flightInfos, passengersCount: Number(e.currentTarget.value)})}  required name='passengers' id='passengers' className='rounded-xl border-[0.5px] border-gray-300 shadow-xs p-3 text-gray-400 mt-2 w-60'>
-                    {Array(8).fill(0).map( (elem, index) => <option key={index} value={index + 1}>{index + 1} Passenger (s)</option>)}
+                    {Array(8).fill(0).map( (elem, index) => <option key={elem + index} value={index + 1}>{index + 1} Passenger (s)</option>)}
                 </select>
             </div>
 
@@ -86,14 +86,8 @@ const BookFlightForm = () => {
             </div>
         </div>
 
-        <Button onClick={(e)=>{
+        <Button onClick={()=>{
             setActiveStep(1);
-            // if(e)
-            //     if(activeStep === 0 )
-            //         e.currentTarget.disabled = true;
-            //     else
-            //         e.currentTarget.disabled = false;
-
         }} textContent='Search Flights' Icon={Search} className='w-full rounded-xl bg-(--sb-blue-250) py-2.5 mt-10 text-white'/>
     </form>
   )

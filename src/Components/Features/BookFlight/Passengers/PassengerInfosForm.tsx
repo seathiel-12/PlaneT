@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, Luggage, User } from 'lucide-react'
+import { ChevronDown, ChevronRight, Luggage } from 'lucide-react'
 import TextField from '../../../../Utils/Components/TextField/TextField'
 import { useEffect, useState } from 'react';
 import Card from '../../../../Utils/Components/Card/Card';

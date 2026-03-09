@@ -1,4 +1,3 @@
-import React from 'react'
 import TextField from '../../../Utils/Components/TextField/TextField'
 import Button from '../../../Utils/Components/Button/Button'
 import { Send } from 'lucide-react'
@@ -9,13 +8,13 @@ function ContactForm() {
        <h2 className='text-2xl playfair-display'>Send us a Message</h2>
 
        <div className='flex gap-6'>
-            <TextField label='First Name *' placeholder='John'/>
-            <TextField label='Last Name *' placeholder='Doe'/>
+            <TextField value={''} label='First Name *' placeholder='John'/>
+            <TextField value={''} label='Last Name *' placeholder='Doe'/>
        </div>
 
-       <TextField label='Email *' placeholder='johnDoe@example.com'/>
+       <TextField value={''} label='Email *' placeholder='johnDoe@example.com'/>
 
-       <TextField label='Phone Number' placeholder='+1 254 366 8854 ' />
+       <TextField value={''} label='Phone Number' placeholder='+1 254 366 8854 ' />
 
         <div className='my-3'>
             <label htmlFor="subject" className='font-bold'>Subject *</label>
