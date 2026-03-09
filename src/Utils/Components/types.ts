@@ -5,7 +5,8 @@ export interface ITextFieldProps{
     placeholder: string, 
     errorMessage?: string,
     Icon?: React.FC<React.SVGProps<SVGSVGElement>>,
-    onChange?: () => void
+    value: string | number,
+    onChange?: (e?: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export interface IButtonProps {
@@ -13,5 +14,5 @@ export interface IButtonProps {
     textContent: string,
     className?: string,
     Icon?: React.FC<React.SVGProps<SVGSVGElement>> | string,
-    onClick?: () => void
+    onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void
 }

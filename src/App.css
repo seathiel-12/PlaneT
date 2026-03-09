@@ -14,7 +14,7 @@
   --sb-blue-fade-2:#afcbff; 
   --sb-gray-fade-2:#e8e8e870;
   --sb-blue-fade-3: #0819971d;
-  
+  --sb-blue-fade-4: #083ccb14;
 }
 
 *{
@@ -52,6 +52,26 @@ button{
 }
 .elongation-reversed{
     animation: elongate 1s ease-in-out forwards reverse;
+}
+.sizing-animation{
+  animation: sizing 2s ease-in-out forwards;
+}
+
+@keyframes sizing {
+  to{
+    height: 100%;
+  }
+}
+.opacity-animation{
+  animation: opacity .2s ease-in-out forwards;
+}
+@keyframes opacity {
+  from{
+    opacity: 0;
+  }
+  to{
+    opacity: 1;
+  }
 }
 @keyframes elongate {
   0%{
