@@ -1,5 +1,5 @@
 import type { MessageCircle } from 'lucide-react'
-import React, { Children, type ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 
 type InputProps = {
     labels: string[],

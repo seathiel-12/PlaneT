@@ -1,12 +1,12 @@
 import { createBrowserRouter } from 'react-router';
 import App from '../App';
-import AuthLayout from './Features/Layout/AuthLayout';
 import Login from './Features/Auth/login/Login';
 import Register from './Features/Auth/login/Register';
 import HomePage from './Pages/HomePage';
 import About from './Pages/About';
 import Contact from './Pages/Contact/Contact';
 import BookFlight from './Pages/BookFlight';
+import AuthLayout from './Features/Layout/AuthLayout'; 
 
 const routes = createBrowserRouter([
     {
