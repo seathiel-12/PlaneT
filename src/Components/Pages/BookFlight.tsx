@@ -3,11 +3,12 @@ import Bubble from '../../Utils/Components/Bubble/Bubble'
 import LinearStepper, { type step } from '../../Utils/Components/Stepper/Stepper'
 import BookFlightForm from '../Features/BookFlight/BookFlightForm'
 import FlightTicket from '../Features/BookFlight/FlightTicket'
-import { createContext, useContext, useState, type Dispatch, type SetStateAction } from 'react'
+import { createContext, useContext, useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 import { PassengerSetting } from '../Features/BookFlight/Passengers/PassengerInfosForm'
 import PassengersForm from '../Features/BookFlight/Passengers/PassengersForm'
 import Button from '../../Utils/Components/Button/Button'
 import type { FlightTicketProps } from '../Features/BookFlight/type'
+import PayementForm from '../Features/BookFlight/PaymentForm'
 
 
 export const StepperContext = createContext<StepperContextProps | undefined>(undefined);
@@ -28,7 +29,10 @@ export const useStepperContext = () => {
 }
 
 function BookFlight() {
-    
+    const [activeStep, setActiveStep] = useState(0);
+    const [levelSlider, setLevelSlider] = useState(0);
+    const [proceedToPayment, setProceedToPayment] = useState(false)
+
     const ticketMockProps: FlightTicketProps[] = [{
         company: 'Air France',
         classTravel: 'Business',
@@ -86,20 +90,24 @@ function BookFlight() {
         },
         { 
             label: 'Payment',
-            render: ()=> <div className='rounded-2xl m-auto w-max text-center bg-white p-15 shadow-xs border-[0.5px] border-gray-200 my-10'>
-                <div className='rounded-full p-3 bg-(--sb-blue-fade-4) w-max m-auto my-4 scale-130 relative bottom-2'><CreditCard stroke='var(--sb-blue-250)' /></div>
-                <h1 className='playfair-display text-3xl'>Ready for Payment</h1>
-                <p className='text-gray-400 text-lg my-3'>Your booking details have been saved. Proceed to payment to complete your reservation.</p>
+            render: ()=> {
+                return !proceedToPayment ? (<div className='rounded-2xl m-auto w-max text-center bg-white p-15 shadow-xs border-[0.5px] border-gray-200 my-10'>
+                    <div className='rounded-full p-3 bg-(--sb-blue-fade-4) w-max m-auto my-4 scale-130 relative bottom-2'><CreditCard stroke='var(--sb-blue-250)' /></div>
+                    <h1 className='playfair-display text-3xl'>Ready for Payment</h1>
+                    <p className='text-gray-400 text-lg my-3'>Your booking details have been saved. Proceed to payment to complete your reservation.</p>
 
-                <Button textContent='Proceed to payment' Icon={CreditCard} className='text-white bg-(--sb-blue-250) text-lg px-6 py-3 w-max m-auto my-4 mt-6' />
-            </div>,
+                    <Button onClick={()=>setProceedToPayment(true)} textContent='Proceed to payment' Icon={CreditCard} className='text-white bg-(--sb-blue-250) text-lg px-6 py-3 w-max m-auto my-4 mt-6' />
+                </div>) : <PayementForm/>
+            },
             onNext: ()=>{},
             onBack: ()=>{}
         }
-    ]
-    const [activeStep, setActiveStep] = useState(0);
-    const [levelSlider, setLevelSlider] = useState(0);
-    
+    ];
+
+    useEffect(()=> {
+        if(activeStep < 3)
+            setProceedToPayment(false);
+    }, [activeStep])
     
   return (
     <div className='py-10 bg-gray-50'>
