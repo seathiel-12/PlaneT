@@ -29,7 +29,7 @@ export const useBookFlightStore = create<BookFlightstore>((set)=>({
         company: 'Air France',
         classTravel: 'Business',
         departureAt: new Date().toUTCString(),
-        landingAt: new Date(Date.now()).toUTCString(),
+        landingAt: new Date().toUTCString(),
         duration: '7h 30min',
         from: 'Paris CDG',
         to: 'Japan JPY',
@@ -53,6 +53,7 @@ export const useBookFlightStore = create<BookFlightstore>((set)=>({
     insurance: false
   },
   price: 0,
+  proceedToPayment: false,
   setFlightInfos: (value)=> set({flightInfos: {...value}}),
   setFlightSelectedInfos: (value)=> {set({flightSelected: {...value}})},
   setPassengersInfos: (num, props, value)=> {

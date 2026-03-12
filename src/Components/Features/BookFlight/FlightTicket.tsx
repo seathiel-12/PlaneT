@@ -2,14 +2,12 @@ import { Clock, Plane, Users } from 'lucide-react'
 import { useStepperContext } from '../../Pages/BookFlight'
 import type { FlightTicketProps } from './type';
 import { useBookFlightStore } from './store';
+import { formatNumber } from '../../../Utils/Functions/formatNumber';
 
 
 function FlightTicket(flight: FlightTicketProps) {
     const {company, classTravel, departureAt, duration, typeFlight, landingAt, from, to, price, seatsLeft} = flight;
     
-    const formatNumber = (number: number)=>{
-        return number < 10 ? `0${number}` : number;
-    }
     const { setActiveStep } = useStepperContext();
     const {setFlightSelectedInfos} = useBookFlightStore();
   return (
