@@ -5,7 +5,7 @@ export interface ITextFieldProps{
     placeholder: string, 
     errorMessage?: string,
     Icon?: React.FC<React.SVGProps<SVGSVGElement>>,
-    value: string | number,
+    value?: string | number,
     onChange?: (e?: React.ChangeEvent<HTMLInputElement>) => void
 }
 
