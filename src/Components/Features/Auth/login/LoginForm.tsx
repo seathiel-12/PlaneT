@@ -4,14 +4,18 @@ import Button from '../../../../Utils/Components/Button/Button';
 import { Link } from 'react-router';
 import Google from '../../../../assets/Icons/google-logo.svg';
 import Apple from '../../../../assets/Icons/apple-logo.svg';
+import { Controller, useForm } from 'react-hook-form';
+import { LoginSchema, type LoginProps } from './type';
+import {zodResolver} from '@hookform/resolvers/zod';
 
-function Login() {
+
+function LoginForm() {
+
     const emailProps = {
         type: 'email',
         label: 'Email',
         placeholder: 'traveler@example.com',
         Icon: Mail,
-        onChange: () => {}
     }
 
     const passwordProps = {
@@ -19,22 +23,35 @@ function Login() {
         label: 'Password',
         placeholder: 'Enter your password',
         Icon: Lock,
-        onChange: () => {}
     }
-
+    const {handleSubmit, control} = useForm<LoginProps>({
+        mode: 'onChange',
+        resolver: zodResolver(LoginSchema)
+    });
+    const onSubmit = (data: LoginProps)=> {
+        console.log(data)
+    } 
   return (
-    <form action='' className=' m-auto rounded-2xl mt-5 bg-white shadow-lg p-8'>
+    <form onSubmit={handleSubmit(onSubmit, (err)=>console.log(err))} className=' m-auto rounded-2xl mt-5 bg-white shadow-lg p-8'>
         <h1 className='text-2xl font-bold'>Welcome back</h1>
         <p className='text-sm mt-4 text-gray-500'>Sign in to your account to manage your bookings</p>
-
-        <TextField {...emailProps} />
-
+        <Controller 
+            control={control}
+            name='email'
+            render={({field, fieldState: {error}})=> <TextField value={field.value} errorMessage={error?.message ?? ''} {...emailProps} onChange={field.onChange} /> }
+        />
+        
         <div>
-            <TextField {...passwordProps} />
+         <Controller 
+            control={control}
+            name='password'
+            render={({field, fieldState: {error}})=> <TextField errorMessage={error?.message ?? ''} {...passwordProps} value={field.value} onChange={field.onChange} /> }
+        />
+            
             <Link to={'/forgot-password'} className='w-max text-sm flex justify-self-end mt-3 text-(--sb-blue-300) cursor-pointer'>Forgot password ?</Link>
         </div>
 
-        <Button className='bg-(--sb-blue-300) text-white w-full mt-4 py-1.5 rounded-lg' textContent='Sign In' />
+        <Button type='submit' className='bg-(--sb-blue-300) text-white w-full mt-4 py-1.5 rounded-lg' textContent='Sign In' />
 
         <div className='flex items-center gap-2 w-full mt-3 justify-center text-sm text-gray-500'>
             <hr className='w-[30%] border-gray-500 border-[1.25px]' />
@@ -56,4 +73,4 @@ function Login() {
   )
 }
 
-export default Login
+export default LoginForm;

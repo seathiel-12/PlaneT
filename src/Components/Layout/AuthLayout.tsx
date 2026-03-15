@@ -1,6 +1,6 @@
 import { Plane } from 'lucide-react'
 import { Outlet, useLocation, useNavigate } from 'react-router';
-import Tab from '../../../Utils/Components/Tabs/Tab';
+import Tab from '../../Utils/Components/Tabs/Tab';
 
 
 function AuthLayout() {

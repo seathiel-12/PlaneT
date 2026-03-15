@@ -1,0 +1,23 @@
+import z from 'zod/v4';
+
+export const LoginSchema = z.object({
+    email: z.email({error:'Incorrect email format!'}),
+    password: z.string().min(8, '8 characters minimum.')
+})
+
+export type LoginProps = z.infer<typeof LoginSchema>;
+
+export const RegisterSchema = z.object({
+    firstname: z.string().min(2),
+    lastname: z.string().min(2),
+    email: z.email(),
+    password: z.string().min(8, {error:'8 characters minimum!'}),
+    confirmPassword: z.string()
+}).refine( data => data.password === data.confirmPassword,
+    {
+        error: "Passwords do not match!",
+        path: ['confirmPassword'],
+    }
+)
+
+export type RegisterProps = z.infer<typeof RegisterSchema>;

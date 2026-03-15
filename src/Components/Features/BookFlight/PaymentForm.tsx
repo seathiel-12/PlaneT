@@ -3,13 +3,12 @@ import Card from '../../../Utils/Components/Card/Card'
 import TextField from '../../../Utils/Components/TextField/TextField';
 import { useBookFlightStore } from './store';
 import { formatNumber } from '../../../Utils/Functions/formatNumber';
-import { useState } from 'react';
-import Button from '../../../Utils/Components/Button/Button';
+import { useState, type ReactNode } from 'react';
 
 const PayementForm = () => {
     const [currentMethod, setCurrentMethod] = useState(0);
     const [agreement, setAgreement] = useState(false);
-    const paymentMethod = [
+    const paymentMethod: {title:string, subtitle: string, Icon: typeof CreditCard, render:()=>ReactNode}[] = [
         {
             title: 'Credit Card',
             subtitle: 'Visa, Mastercard, Amex',
@@ -37,7 +36,7 @@ const PayementForm = () => {
     ];
 
     const { price, flightSelected:{company, from, to, departureAt, landingAt}, flightInfos: {passengersCount, travelClass}, passengersSetting: {luggage} }= useBookFlightStore();
-    const fees = 50;
+    const FEES = 50;
 
     const formatTravelingDuration = (date1:string, date2: string)=> {
         
@@ -77,13 +76,13 @@ const PayementForm = () => {
                 </div>
                 <div className='flex items-center justify-between'>
                     <p className='text-gray-500'>Taxes & Fees</p>
-                    <p className='text-lg'>${fees}.00</p>
+                    <p className='text-lg'>${FEES}.00</p>
                 </div>
                 <hr className='border-gray-300 my-4' />
                 
                 <div className='flex items-center justify-between'>
                     <p className='font-semibold text-xl'>Total</p>
-                    <p className='text-2xl font-semibold text-(--sb-blue-250)'>${price + fees}.00</p>
+                    <p className='text-2xl font-semibold text-(--sb-blue-250)'>${price + FEES}.00</p>
                 </div>
             </Card>
         </div>
@@ -116,13 +115,13 @@ const PayementForm = () => {
 
                 <div className='flex items-center justify-between text-lg'>   
                     <p className='text-gray-400'>Taxes & fees</p>
-                    <p>{`$${fees}`}</p>
+                    <p>{`$${FEES}`}</p>
                 </div>
 
                 <hr className='border-[0.5px] border-gray-300 my-2' />
                 <div className='flex items-center justify-between'>
                     <p className='font-semibold text-xl'>Total</p>
-                    <p className='text-2xl font-semibold text-(--sb-blue-250)'>{`$${price + fees}`}</p>
+                    <p className='text-2xl font-semibold text-(--sb-blue-250)'>{`$${price + FEES}`}</p>
                 </div>
                 <hr className='border-[0.5px] border-gray-300 my-5' />
 
@@ -143,7 +142,7 @@ const PayementForm = () => {
 
             <button className={'flex items-center justify-center gap-2 rounded-xl py-2 bg-(--sb-blue-250) text-white w-full my-5 font-semibold duration-200 hover:scale-95 ' + ( !agreement ? ' opacity-50' : '')}>
                 <Lock width={20}/>
-                <span>{`Pay $${price +  fees}.00`}</span>
+                <span>{`Pay $${price +  FEES}.00`}</span>
             </button>
 
         </div>
