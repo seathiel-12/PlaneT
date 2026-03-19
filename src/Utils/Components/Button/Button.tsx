@@ -2,10 +2,11 @@ import type { FC } from 'react';
 import './Button.css'
 import type { IButtonProps } from '../types';
 
-const Button: FC<IButtonProps> = ({type, textContent, className, Icon, onClick})=>{
+const Button: FC<IButtonProps> = ({type, textContent, className, Icon, onClick, ...properties})=>{
 
     return (
         <button 
+            {...properties}
             type={type ?? 'button'}
             onClick={(e)=>{
                 if(onClick)

@@ -167,10 +167,10 @@ function SearchBar() {
             <div className='bg-white w-2/3 m-auto shadow-gray-400 shadow-xs mt-5 rounded-full border-gray-200 border text-[0.9rem] min-w-max'>
                 <form action="">
                     <TabGroup>
-                        <TabList ref={navbar} className='relative flex justify-between cursor-pointer items-center rounded-full transition-all text-[1rem]'>
+                        <TabList ref={navbar} className='relative grid grid-cols-[27%_23%_23%_27%] justify-between cursor-pointer items-center rounded-full transition-all text-[1rem]'>
                             <Tab 
                                 id="l1" 
-                                className='cursor-pointer outline-none rounded-full max-w-1/3 w-full' 
+                                className='cursor-pointer outline-none rounded-full w-full' 
                                 onClick={(e) =>overlayer(e, "50%", <p>Bienvenue</p>, 0, 'l1')}
                                 onMouseEnter={ (e)=>{
                                     
@@ -178,7 +178,7 @@ function SearchBar() {
                             >
                                 {({hover}) => (
                                     <div className={clsx('py-3 rounded-full px-7 w-full text-left', hover && 'bg-(--sb-gray-hover)')}>
-                                        <p className='relative z-3'>Destination</p>
+                                        <p className='relative z-3 text-lg'>Destination</p>
                                         <input className='outline-none w-full pr-2 relative z-3' type="text" name="search" placeholder='Look for a destination' />
                                     </div>
                                 )}
@@ -186,12 +186,12 @@ function SearchBar() {
 
                             <Tab 
                                 id="l2" 
-                                className='cursor-pointer outline-none rounded-full text-center w-1/6' 
+                                className='cursor-pointer outline-none rounded-full text-center ' 
                                 onClick={(e) =>overlayer(e, "100%", allContents.l2, 0, 'l2')}
                             > 
                                 {({hover}) => (
                                 <div className={clsx('py-3 rounded-full px-5 w-full', hover && 'bg-(--sb-gray-hover)')}>
-                                    <p className='relative z-3'>Arrival</p>
+                                    <p className='relative z-3 text-lg'>Arrival Date</p>
                                     <p className='text-gray-400 relative z-3'>{hasChanged.has("start") ? dayjs(arrivalDate).format('MMM DD YYYY') : "When?"}</p>
                                 </div>
                                 )}            
@@ -200,24 +200,25 @@ function SearchBar() {
                             
                             <Tab 
                                 id="l3"
-                                className='cursor-pointer outline-none rounded-full w-1/6 text-center' 
+                                className='cursor-pointer outline-none rounded-full text-center' 
                                 onClick={(e) =>overlayer(e, "100%", allContents.l2, 0, 'l3')}
                             > 
                             {({ hover }) => (
                                 <div className={clsx('py-3 rounded-full px-5 w-full', hover && 'bg-(--sb-gray-hover)')}>
-                                    <p className='relative z-3'>Departure</p>
+                                    <p className='relative z-3 text-lg'>Departure Date</p>
                                     <p className='relative z-3 text-gray-400'>{hasChanged.has("end") ? dayjs(departureDate).format('MMM DD YYYY') : "When?"}</p>
                                 </div>
                             ) }
                                 
                             </Tab>
 
-                            <Tab id="l4" className='cursor-pointer outline-none rounded-full max-w-1/3 w-full' onClick={(e) => {
+                            <Tab id="l4" className='cursor-pointer outline-none rounded-full w-full' onClick={(e) => {
                                 overlayer(e, "50%", allContents.l4, '50%', 'l4')
                             }}>
                                 {({hover})=> (
                                 <div className={clsx('py-3 rounded-full px-7 w-full text-left', hover && 'bg-(--sb-gray-hover)')}>
-                                    <p className='relative z-3'>Travelers</p>
+                                    <p className='relative z-3 text-lg
+                                    '>Travelers</p>
                                     <p className='text-gray-400 relative z-3'>Add some...</p>
                                 </div>      
                             )}
