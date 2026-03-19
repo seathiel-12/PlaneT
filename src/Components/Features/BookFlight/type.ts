@@ -1,3 +1,5 @@
+import type { Control } from 'react-hook-form';
+import { z } from 'zod/v4';
 export type FlightTicketProps = {
     company: string, 
     classTravel: 'Economy'| 'Business' | 'First Class',
@@ -20,7 +22,8 @@ export type BookFlightProps = {
 }
 
 export type PassengerInfosFormProps ={
-    num: number
+    num: number,
+    control: Control<PassengersInfosProps>,
 }
 
 export type PassengerSettings = {
@@ -29,15 +32,15 @@ export type PassengerSettings = {
     insurance: boolean
 }
 
-export type PassengersInfosProps = {
-    num: number,
-    firstname: string,
-    lastname: string,
-    passportNumber: string,
-    nationality: string,
-    bornAt: string,
-    email: string, 
-    phoneNumber: string
-}
+export const PassengerInfosSchema = z.object({
+    num: z.number(),
+    firstname: z.string().min(2, {error: 'Name required!'}),
+    lastname: z.string().min(2, {error: 'Lastname required!'}),
+    passportNumber: z.string().min(6, {error: 'Invalid passport number!'}),
+    nationality: z.string(),
+    bornAt: z.string(),    
+    email: z.email(), 
+    phoneNumber: z.string().min(10, {error: 'Invalid format number!'})   
+})
 
-
+export type PassengersInfosProps = z.infer<typeof PassengerInfosSchema>

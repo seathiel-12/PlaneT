@@ -6,16 +6,24 @@ import { useStepperContext } from '../../Pages/BookFlight';
 import { useBookFlightStore } from './store';
 const cities = ['New York (JFK)', 'Paris (CDG)', 'Dubai', 'Tokyo', 'London', 'Sydney', 'Singapour', 'Los Angeles']
 
-// type BookFlightProps = {
-//     onsubmit: ()=> void,
-// }
 
 const BookFlightForm = () => {
     const typeFlight = ['Round Trip', 'One Way'];
     const [currentTypeFlight, setCurrentTypeFlight] = useState(typeFlight[0]);
     const { setActiveStep } = useStepperContext();
+    const [oneWay, setOneWay] = useState(false);
 
     const {flightInfos, setFlightInfos} = useBookFlightStore();
+    const switchDestinations = () => {
+        if(!(flightInfos.travelFrom || flightInfos.travelTo))
+            return
+
+        const to = flightInfos.travelTo;
+        const from = flightInfos.travelFrom;
+
+        setFlightInfos({...flightInfos, travelTo: from, travelFrom: to});
+        
+    }
     
   return (
     <form className='rounded-2xl shadow-xl bg-white p-10 my-5 mt-10 ' >
@@ -24,6 +32,10 @@ const BookFlightForm = () => {
             <div className='w-55'>
                 <Tab options={typeFlight} current={currentTypeFlight} onclick={(e)=>{
                     setCurrentTypeFlight(e.currentTarget.id)
+                    if(e.currentTarget.id !== currentTypeFlight)
+                        if(e.currentTarget.id === typeFlight[1])
+                            setOneWay(true)
+                        else setOneWay(false)
                 }} />
             </div>
         </div>
@@ -45,12 +57,12 @@ const BookFlightForm = () => {
 
                     {cities.map(city => <option key={city} value={city}>{city}</option>)}
                 </select>
-                {label === 'To' && <div className='rounded-full p-2 px-3 bg-white border-[0.5px] border-gray-300 shadow-xs absolute -bottom-5 -left-7 cursor-pointer hover:bg-gray-100 scale-80'><ArrowLeftRight width={17}/></div>}
+                {label === 'To' && <div onClick={switchDestinations} className='rounded-full p-2 px-3 bg-white border-[0.5px] border-gray-300 shadow-xs absolute -bottom-5 -left-7 cursor-pointer hover:bg-gray-100 scale-80'><ArrowLeftRight width={17}/></div>}
             </div>) }
         </div>
 
         <div className='grid grid-cols-2 my-7 gap-7'>
-            {['Departure', 'Return'].map( label => <div key={label} className='w-full'>
+            {['Departure', 'Return'].filter((elem)=> oneWay ? elem === 'Departure' : elem ).map( label => <div key={label} className='w-full'>
                 <label htmlFor={label} className='flex items-center gap-2'>
                     <Calendar width={17} stroke='var(--sb-blue-250)'/>
                     <span>{label} date</span>
@@ -86,9 +98,9 @@ const BookFlightForm = () => {
             </div>
         </div>
 
-        <Button onClick={()=>{
+        <Button disabled={!(flightInfos.departureDate && flightInfos.travelFrom && flightInfos.travelTo)} onClick={()=>{
             setActiveStep(1);
-        }} textContent='Search Flights' Icon={Search} className='w-full rounded-xl bg-(--sb-blue-250) py-2.5 mt-10 text-white'/>
+        }} textContent='Search Flights' Icon={Search} className='w-full rounded-xl bg-(--sb-blue-250) py-2.5 mt-10 text-white' style={!(flightInfos.departureDate && flightInfos.travelFrom && flightInfos.travelTo) ? {opacity: '50%', scale: '100%'} : {}}/>
     </form>
   )
 }

@@ -6,65 +6,105 @@ import Card from '../../../../Utils/Components/Card/Card';
 import { useStepperContext } from '../../../Pages/BookFlight';
 import type { PassengerInfosFormProps } from '../type';
 import { useBookFlightStore } from '../store';
+import { Controller } from 'react-hook-form';
 
 const countries = ['Benin', 'Togo', "Cote d'ivoire", "Senegal"];
 
 
-const PassengerInfosForm: React.FC<PassengerInfosFormProps> = ({num}) => {
+const PassengerInfosForm: React.FC<PassengerInfosFormProps> = ({ num, control}) => {
     const [isVisible, setIsVisible] = useState(num === 1)
     const {passengersInfos, setPassengersInfos} = useBookFlightStore();
+    const passenger = passengersInfos[num-1];
   return (
        <Card classname='p-5 mt-5 transition-all sizing-animation'>
             <div>
             <div className='flex justify-between items-center'>
                <h2 className='font-semibold'>Passenger {num}</h2>
-               <div onClick={()=>setIsVisible(!isVisible)}><ChevronDown width={17} className='text-gray-400'/></div> 
+               <div onClick={() => setIsVisible(!isVisible)}><ChevronDown width={17} className='text-gray-400'/></div> 
             </div>
             { isVisible && 
                 <div className='opacity-animation'>
                    <div className='grid grid-cols-2 gap-8'>
-                        <TextField value={passengersInfos[num - 1 ].firstname} onChange={(e)=> {
+                        <Controller 
+                            control={control}
+                            name='firstname'
+                            render={({field,fieldState:{error}})=> <TextField value={field.value} errorMessage={error?.message} required onChange={(e)=> {
                             if(e)
                                 setPassengersInfos(num, 'firstname', e.currentTarget.value)
-                        }} label='First Name *' placeholder='As shown on passport' />
-                        <TextField value={passengersInfos[num - 1].lastname} onChange={(e)=> {
+                            field.onChange(e);
+                        }} label='First Name *' placeholder='As shown on passport' />}
+                        />
+                       <Controller 
+                            name='lastname'
+                            control={control}
+                            render={({field, fieldState:{error}})=><TextField errorMessage={error?.message} required value={field.value} onChange={(e)=> {
                             if(e)
                                 setPassengersInfos(num, 'lastname', e.currentTarget.value)
+                            field.onChange(e);
                         }
-                            } label='Last Name *' placeholder='As shown on passport' />
+                            } label='Last Name *' placeholder='As shown on passport' />}
+                       />
+                        
                     </div>
 
                     <div className='grid grid-cols-2 gap-8 items-baseline'>
                         <div>
                             <label htmlFor="nationality" className='font-semibold'>Nationality</label>
-                            <select name="nationality" id="nationality" className='bg-gray-50 block rounded-xl border-[0.5px] border-gray-300 shadow-xs py-2 px-3 text-gray-400 mt-2'>
+                            <select required onChange={(e)=>{
+                                if(e)
+                                setPassengersInfos(num, 'nationality', e.currentTarget.value)
+                            }} defaultValue={''} name="nationality" id="nationality" className='bg-gray-50 block rounded-xl border-[0.5px] border-gray-300 shadow-xs py-2 px-3 text-gray-400 mt-2'>
                                 <option value="" hidden>Select a country</option>
                                 {countries.map(country => <option key={country} value={country}>{country}</option>)}
                             </select>
                         </div>
-                        <TextField value={passengersInfos[num - 1].passportNumber} onChange={(e)=> {
+                        <Controller 
+                            name='passportNumber'
+                            control={control}
+                            render={({field, fieldState:{error}})=><TextField errorMessage={error?.message} required value={field.value} onChange={(e)=> {
                             if(e)
                                 setPassengersInfos(num, 'passportNumber', e.currentTarget.value)
-                        }
-                            } label='Passport Number *' placeholder='Enter passport number' />
+                            field.onChange(e);
+                            }
+                            } label='Passport Number *' placeholder='Enter passport number' />}
+                       />
+                        
                     </div>
 
                     <div className='grid grid-cols-3 gap-5'>
-                        <TextField value={passengersInfos[num - 1].bornAt} onChange={(e)=> {
+                        <Controller 
+                            control={control}
+                            name='bornAt'
+                            render={({field, fieldState:{error}})=><TextField errorMessage={error?.message} required value={field.value} onChange={(e)=> {
                             if(e)
                                 setPassengersInfos(num, 'bornAt', e.currentTarget.value)
+                            field.onChange(e);
                         }
-                            } type='date' label='Date of Birth *' placeholder=''/>
-                        <TextField value={passengersInfos[num - 1].email} onChange={(e)=> {
+                            } type='date' label='Date of Birth *' placeholder=''/>}
+                        />
+                        
+                        <Controller 
+                            control={control}
+                            name='email'
+                            render={({field, fieldState:{error}})=><TextField errorMessage={error?.message} required value={field.value} onChange={(e)=> {
                             if(e)
                                 setPassengersInfos(num, 'email', e.currentTarget.value)
+                            field.onChange(e);
                         }
-                            } label='Email *' placeholder='email@example.com' type='email' />
-                        <TextField value={passengersInfos[num - 1].phoneNumber} onChange={(e)=> {
+                            } label='Email *' placeholder='email@example.com' type='email' />}
+                        />
+                        
+                        <Controller 
+                            control={control}
+                            name='phoneNumber'
+                            render={({field, fieldState:{error}})=><TextField errorMessage={error?.message} required value={field.value} onChange={(e)=> {
                             if(e)
                                 setPassengersInfos(num, 'phoneNumber', e.currentTarget.value)
+                            field.onChange(e);
                         }
-                            } label='Phone Number *' placeholder='+1 554 755 9400' />  
+                            } label='Phone Number *' placeholder='+1 554 755 9400' />}
+                        />
+                          
                     </div> 
                 </div>
             }
@@ -172,7 +212,8 @@ export const PassengerSetting = () => {
 
 const PriceFlight = ()=>{
     const {setActiveStep} = useStepperContext();
-    const {price, flightInfos: {passengersCount}} = useBookFlightStore();
+    const {price, flightInfos: {passengersCount}, passengersInfos} = useBookFlightStore();
+
     return (
         <div className='border border-(--sb-blue-250) px-7 py-10 bg-(--sb-blue-fade-4) flex items-center justify-between my-10 rounded-2xl'>
             <div className='text-left'>
@@ -180,7 +221,12 @@ const PriceFlight = ()=>{
                 <p className='text-5xl font-semibold'>${price}</p>
                 <p className='text-gray-500'>{passengersCount} passenger(s) • All fees included</p>
             </div>
-            <button onClick={()=> setActiveStep(3)} className='rounded-2xl py-3 px-5 bg-(--sb-blue-250) text-white flex items-center gap-2'>
+            <button type='submit' onClick={()=> {
+                if(passengersInfos.every(p=> Object.values(p).every(val=> String(val).trim().length>0)))
+                    setActiveStep(3)
+                }
+            } 
+            className='rounded-2xl py-3 px-5 bg-(--sb-blue-250) text-white flex items-center gap-2'>
                 <span>Continue to payment</span>
                 <ChevronRight/>
             </button>
