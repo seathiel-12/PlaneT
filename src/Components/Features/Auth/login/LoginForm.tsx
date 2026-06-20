@@ -1,12 +1,12 @@
 import { Lock, Mail } from 'lucide-react'
-import TextField from '../../../../Utils/Components/TextField/TextField'
-import Button from '../../../../Utils/Components/Button/Button';
 import { Link } from 'react-router';
 import Google from '../../../../assets/Icons/google-logo.svg';
 import Apple from '../../../../assets/Icons/apple-logo.svg';
 import { Controller, useForm } from 'react-hook-form';
 import { LoginSchema, type LoginProps } from './type';
 import {zodResolver} from '@hookform/resolvers/zod';
+import TextField from '../../../../Utils/Components/TextField/TextField';
+import Button from '../../../../Utils/Components/Button/Button';
 
 
 function LoginForm() {

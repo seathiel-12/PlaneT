@@ -40,7 +40,7 @@ function Contact() {
             <p className='text-xl text-gray-400 w-[95%]'>Have questions or need assistance? Our team is here to help you plan your perfect journey.</p>
         </div>
 
-        <div className='my-10 grid grid-cols-4 gap-5 w-2/3 m-auto mt-20'>
+        <div className='my-10 grid grid-cols-4 gap-5 w-[75%] m-auto mt-20'>
             {
                 contactInfos.map( ({Icon, title, description, value}) => <div className='rounded-2xl shadow-2xs border-[0.5px] border-gray-300 p-8 text-center bg-white'>
                     <div className='rounded-full p-3 bg-[#75aafa55] w-max m-auto'><Icon className='text-(--sb-blue-250)'/></div>
@@ -51,14 +51,14 @@ function Contact() {
             }
         </div>
 
-        <div className='grid grid-cols-2 m-auto gap-10 h-max mt-20 w-2/3'>
+        <div className='grid grid-cols-2 m-auto gap-10 mt-20 w-[75%]'>
             <ContactForm/>
-            <div className=''>
-                <div className='rounded-2xl shadow-xs border-[0.5px] border-gray-300 w-full bg-white flex'>
-                    <div className='text-center m-auto py-15 bg-gray-100 w-full my-3 font-bold text-gray-500'>Interactive map</div>
+            <div className='max-h-full flex flex-col gap-7'>
+                <div className='rounded-2xl shadow-xs border-[0.5px] border-gray-300 w-full bg-white flex h-full'>
+                    <div className='text-center m-auto bg-gray-100 w-full my-3 font-bold text-gray-500 py-20'>Interactive map</div>
                 </div>
 
-                <div className='w-full my-5 rounded-2xl border-[0.5px] border-gray-300 py-10 px-7 bg-white shadow-xs'>
+                <div className='w-full rounded-2xl border-[0.5px] border-gray-300 py-7 px-7 bg-white shadow-xs min-h-max'>
                     <div className='flex gap-3 items-center'>
                         <Clock width={19} className='text-(--sb-blue-250)'/>
                         <span className='font-bold'>Business Hours</span>
@@ -73,7 +73,7 @@ function Contact() {
                     </p>
                 </div>
 
-                <div className='mt-5 rounded-2xl border-[0.5px] border-(--sb-blue-250) p-10 w-full bg-[#3b87e312]'>
+                <div className='rounded-2xl border-[0.5px] border-(--sb-blue-250) p-10 py-6 w-full bg-[#3b87e312] min-h-max'>
                     <h2 className='my-3 font-bold'>Looking for Quick Answers?</h2>
                     <p className=' text-gray-500'>Check our frequently asked questions for instant help with common inquiries.</p>
 

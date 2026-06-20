@@ -2,13 +2,14 @@ import { CreditCard, Plane } from 'lucide-react'
 import Bubble from '../../Utils/Components/Bubble/Bubble'
 import LinearStepper, { type step } from '../../Utils/Components/Stepper/Stepper'
 import BookFlightForm from '../Features/BookFlight/BookFlightForm'
-import FlightTicket from '../Features/BookFlight/FlightTicket'
 import { createContext, useContext, useEffect, useState, type Dispatch, type SetStateAction } from 'react'
 import { PassengerSetting } from '../Features/BookFlight/Passengers/PassengerInfosForm'
 import PassengersForm from '../Features/BookFlight/Passengers/PassengersForm'
 import Button from '../../Utils/Components/Button/Button'
 import type { FlightTicketProps } from '../Features/BookFlight/type'
 import PayementForm from '../Features/BookFlight/PaymentForm'
+import { FlightTicket } from '../Features/BookFlight/FlightTicket';
+import { useBookFlightStore } from '../Features/BookFlight/store';
 
 
 export const StepperContext = createContext<StepperContextProps | undefined>(undefined);
@@ -32,6 +33,7 @@ function BookFlight() {
     const [activeStep, setActiveStep] = useState(0);
     const [levelSlider, setLevelSlider] = useState(0);
     const [proceedToPayment, setProceedToPayment] = useState(false)
+    const {setFlightSelectedInfos} = useBookFlightStore();
 
     const ticketMockProps: FlightTicketProps[] = [{
         company: 'Air France',
@@ -45,7 +47,7 @@ function BookFlight() {
         typeFlight:'Direct',
         seatsLeft: '32'
     }]
-
+    
     const steps: step[] = [
         { 
             label: 'Search',
@@ -66,12 +68,15 @@ function BookFlight() {
             label: 'Select Flight',
             render: ()=> <div>
                 <BookFlightForm/>
-                <div className='flex items-center flex-between w-full my-3'>
-                    <p className='font-semibold w-full text-xl' >{ 5 } flights found</p>
+                <div className='flex items-center flex-between w-full my-5 mt-10'>
+                    <p className='font-semibold w-full text-xl' >{ ticketMockProps.length } flights found</p>
                     <Bubble text='Best prices guaranteed'/>
                 </div>
                 <div>
-                    {ticketMockProps.map((ticket, index)=> <div key={index}><FlightTicket {...ticket}/></div>)}
+                    {ticketMockProps.map((ticket, index)=> <div key={index}><FlightTicket flight={ticket} variant='primary' onSelect={()=>{
+                        setActiveStep(2);
+                        setFlightSelectedInfos(ticket);
+                    }}/></div>)}
                 </div>
             </div>,
             onNext: ()=>{},

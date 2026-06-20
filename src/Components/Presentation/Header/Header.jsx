@@ -16,8 +16,8 @@ function Header() {
         </div>
 
         <div className='flex gap-5'>
-            <Link to={'/sign-in'} className='flex gap-2 justify-center items-center px-3 rounded-xl py-1.25  hover:bg-orange-400 transition-all'> <User width={17} height={17}/> Sign In</Link>
-            <Link to={'/book-now'} className='px-3 py-1.25 rounded-xl bg-blue-500 text-white hover:opacity-90'>Book Now</Link>
+            <Link to={'/sign-in'} className='flex gap-2 justify-center items-center px-3 rounded-md py-1.25  hover:bg-orange-400 hover:text-white transition-all'> <User width={17} height={17}/> Sign In</Link>
+            <Link to={'/book-now'} className='px-3 py-1.25 rounded-md bg-blue-500 text-white hover:opacity-90'>Book Now</Link>
         </div>
     </header>
   )

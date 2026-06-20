@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-function Tab( {options, current, onclick}: {options: string[], current?:string, onclick: (e:React.MouseEvent<HTMLButtonElement, MouseEvent>)=>void} ) {
+function Tabs( {options, current, onclick}: {options: string[], current?:string, onclick: (e:React.MouseEvent<HTMLButtonElement, MouseEvent>)=>void} ) {
     const ref = useRef<HTMLDivElement>(null);
     
     const tabFunc = (e?:React.MouseEvent<HTMLButtonElement, MouseEvent>)=>{
@@ -37,4 +37,4 @@ function Tab( {options, current, onclick}: {options: string[], current?:string, 
   )
 }
 
-export default Tab
+export default Tabs

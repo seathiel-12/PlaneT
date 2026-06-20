@@ -8,6 +8,9 @@ import { ClickAwayListener, colors, duration, easing } from '@mui/material'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import clsx from 'clsx'
 import { Fragment } from 'react'
+import DateRangePicker from '../DateRangePicker/DateRangePicker.jsx';
+import { FloatingIndicator, Tabs } from '@mantine/core';
+import classes from '../../../App.module.css'
 
 function SearchBar() {
     
@@ -18,12 +21,11 @@ function SearchBar() {
     const [active, setActive] = useState("");
     const [contentNeedles, setContentNeedles] = useState<{width: string | number, content: React.ReactNode, left: string | number}>({width:'0', content:'', left:'0'})
     const [arrivalDate, setArrivalDate] = useState(dayjs())
-    const [departureDate, setDepartureDate] = useState(dayjs())
     const [hasChanged, setHasChanged] = useState(new Set())
-    const [input, setInput] = useState('')
     const destination = [
         
     ]
+
     const travelers=[
         { title: "Adultes", sub:'13ans et plus' },
         { title: "Enfants", sub:'De 2 à 12 ans' }, 
@@ -32,34 +34,29 @@ function SearchBar() {
     ]
 
     const allContents = {
+        l1: 
+        <div className="h-60">
+            
+        </div>,
         l2: 
-        <div>
-            <TabGroup className={"m-auto w-full"}>
-                <TabList className={"my-5 w-3/7 mx-auto flex gap-2 rounded-full p-1 bg-[#e0dedee5] font-semibold"}>
+        <div className="">
+             <TabGroup className={"m-auto w-full"}>
+                <TabList className={"my-5 w-[30%] mx-auto grid grid-cols-2 gap-2 rounded-full p-1 bg-[#e0dedee5] font-semibold"}>
                     <Tab as={Fragment}>
                     {({ hover, selected }) => (
                         <button
-                            style={{padding: '5px 10px', width:'33%'}}
+                            style={{padding: '5px 10px'}}
                             className={clsx('rounded-full', hover && 'bg-[#d3d3d3e7]', selected && 'bg-white text- outline-none')}
                         >
                             Dates
                         </button>
                     )}
                     </Tab>
+                    
                     <Tab as={Fragment}>
                     {({ hover, selected }) => (
                         <button
-                            style={{padding: '5px 10px', width:'33%'}}
-                            className={clsx('rounded-full py-1', hover && 'bg-[#d3d3d3e7]', selected && 'bg-white text- outline-none')}
-                        >
-                            Months
-                        </button>
-                    )}
-                    </Tab>
-                    <Tab as={Fragment}>
-                    {({ hover, selected }) => (
-                        <button
-                            style={{padding: '5px 10px', width:'33%'}}
+                            style={{padding: '5px 10px'}}
                             className={clsx('rounded-full py-1', hover && 'bg-[#d3d3d3e7]', selected && 'bg-white text- outline-none')}
                         >
                             Flexible
@@ -67,17 +64,10 @@ function SearchBar() {
                     )}
                     </Tab>
                 </TabList>
+
                 <TabPanels>
                     <TabPanel>
-                        <div className='flex justify-between gap-5'>
-                            <DatePicker key="arrival" label={'Arrival'} minDate={dayjs()} onchange={(e)=>{setArrivalDate(e); setHasChanged((prev)=>new Set(prev).add("start"));}} />
-                            <DatePicker key="departure" label={'Departure'} minDate={dayjs(arrivalDate)} onchange={(e)=>{setDepartureDate(e); setHasChanged((prev)=>new Set(prev).add("end"))}}/>
-                        </div>
-                    </TabPanel>
-                    <TabPanel>
-                        <div>
-                            
-                        </div>
+                        <DateRangePicker/>
                     </TabPanel>
                     <TabPanel>
                         <div className='text-center'>
@@ -99,8 +89,8 @@ function SearchBar() {
                         </div>
                     </TabPanel>
                 </TabPanels>
-            </TabGroup>        
-        </div>,
+            </TabGroup>         
+    </div>,
 
         l4:
         <div>
@@ -126,7 +116,7 @@ function SearchBar() {
         leftContent: string | number,
         id: string
     ) => {
-        const li = (e.target as HTMLElement).parentNode as HTMLElement
+        const li = (e.target as HTMLElement).closest('.onglet') as HTMLElement
         const {width, height, left, top} = li.getBoundingClientRect()
         if(navbar.current){
             navbar.current.classList.add('bg-[#e2e2e254]')
@@ -151,7 +141,6 @@ function SearchBar() {
 
         setOverlayDimensions( { width: width, height: height, left: left + window.scrollX, top:top + window.scrollY , display: "block"} )
         setActive(id)
-        console.log(active)
         setContentNeedles({width: contentWidth, left: leftContent , content: content })
     }
 
@@ -161,64 +150,53 @@ function SearchBar() {
 
   return (
     <>
-        <ClickAwayListener 
+    <ClickAwayListener 
         children={
         <div>
-            <div className='bg-white w-2/3 m-auto shadow-gray-400 shadow-xs mt-5 rounded-full border-gray-200 border text-[0.9rem] min-w-max'>
+            <div className='bg-white w-[30%] m-auto shadow-gray-400 shadow-xs mt-5 rounded-full border-gray-200 border text-[0.9rem] min-w-max'>
                 <form action="">
                     <TabGroup>
-                        <TabList ref={navbar} className='relative grid grid-cols-[27%_23%_23%_27%] justify-between cursor-pointer items-center rounded-full transition-all text-[1rem]'>
+                        <TabList ref={navbar} className='relative grid grid-cols-3 justify-between cursor-pointer items-center rounded-full transition-all text-[1rem]'>
                             <Tab 
                                 id="l1" 
-                                className='cursor-pointer outline-none rounded-full w-full' 
-                                onClick={(e) =>overlayer(e, "50%", <p>Bienvenue</p>, 0, 'l1')}
+                                className='cursor-pointer outline-none rounded-full w-full min-w-max' 
+                                onClick={(e) =>{
+                                    overlayer(e, "50%", allContents.l1, 0, 'l1')
+                                }}
                                 onMouseEnter={ (e)=>{
                                     
                                 }}
                             >
                                 {({hover}) => (
-                                    <div className={clsx('py-3 rounded-full px-7 w-full text-left', hover && 'bg-(--sb-gray-hover)')}>
-                                        <p className='relative z-3 text-lg'>Destination</p>
-                                        <input className='outline-none w-full pr-2 relative z-3' type="text" name="search" placeholder='Look for a destination' />
+                                    <div className={clsx('py-3 rounded-full px-7 w-full text-left onglet', hover && 'bg-(--sb-gray-hover)')}>
+                                        <label className='relative z-3 text-sm font-semibold'>Destination</label>
+                                        <input className='outline-none w-full pr-2 relative' type="text" name="search" placeholder='Look for a destination' />
                                     </div>
                                 )}
                             </Tab>
 
                             <Tab 
                                 id="l2" 
-                                className='cursor-pointer outline-none rounded-full text-center ' 
+                                className='cursor-pointer outline-none rounded-full min-w-max text-left' 
                                 onClick={(e) =>overlayer(e, "100%", allContents.l2, 0, 'l2')}
                             > 
-                                {({hover}) => (
-                                <div className={clsx('py-3 rounded-full px-5 w-full', hover && 'bg-(--sb-gray-hover)')}>
-                                    <p className='relative z-3 text-lg'>Arrival Date</p>
-                                    <p className='text-gray-400 relative z-3'>{hasChanged.has("start") ? dayjs(arrivalDate).format('MMM DD YYYY') : "When?"}</p>
+                                {({hover, selected}) => (
+                                <div className={clsx('py-3 w-full onglet', hover  && 'bg-(--sb-gray-hover) rounded-full')}>
+                                    <div className={clsx('relative z-4 border-x-2 border-x-gray-200 px-8', (hover || selected) && 'border-x-transparent')}>
+                                        <small className='text-sm font-semibold'>Dates</small>
+                                        <p className='text-gray-400'>{hasChanged.has("start") ? dayjs(arrivalDate).format('MMM DD YYYY') : "When?"}</p>
+                                    </div>
                                 </div>
                                 )}            
                                 
                             </Tab>
-                            
-                            <Tab 
-                                id="l3"
-                                className='cursor-pointer outline-none rounded-full text-center' 
-                                onClick={(e) =>overlayer(e, "100%", allContents.l2, 0, 'l3')}
-                            > 
-                            {({ hover }) => (
-                                <div className={clsx('py-3 rounded-full px-5 w-full', hover && 'bg-(--sb-gray-hover)')}>
-                                    <p className='relative z-3 text-lg'>Departure Date</p>
-                                    <p className='relative z-3 text-gray-400'>{hasChanged.has("end") ? dayjs(departureDate).format('MMM DD YYYY') : "When?"}</p>
-                                </div>
-                            ) }
-                                
-                            </Tab>
-
-                            <Tab id="l4" className='cursor-pointer outline-none rounded-full w-full' onClick={(e) => {
+                        
+                            <Tab id="l4" className='cursor-pointer outline-none rounded-full w-full min-w-max' onClick={(e) => {
                                 overlayer(e, "50%", allContents.l4, '50%', 'l4')
                             }}>
                                 {({hover})=> (
-                                <div className={clsx('py-3 rounded-full px-7 w-full text-left', hover && 'bg-(--sb-gray-hover)')}>
-                                    <p className='relative z-3 text-lg
-                                    '>Travelers</p>
+                                <div className={clsx('py-3 rounded-full px-7 w-full text-left onglet', hover && 'bg-(--sb-gray-hover)')}>
+                                    <small className='relative z-3 text-sm font-semibold'>Travelers</small>
                                     <p className='text-gray-400 relative z-3'>Add some...</p>
                                 </div>      
                             )}

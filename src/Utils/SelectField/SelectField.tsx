@@ -1,37 +1,110 @@
+import * as React from 'react';
+import { styled, alpha } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
 import { ChevronDown } from 'lucide-react';
-import React, { useState } from 'react'
 
-type SelectFieldProps = {
-    name: string,
-    options: string[],
-    placeholder: string,
-    label: string
+interface MenuProps {
+  id: string;
+  slotProps: {
+    list: {
+      'aria-labelledby': string;
+    };
+  };
+  anchorEl?: null | HTMLElement;
+  open: boolean;
+  onClose?: () => void;
+  children?: React.ReactNode;
 }
 
-const SelectField: React.FC<SelectFieldProps> = ({options, name, placeholder, label}) => {
+const StyledMenu = styled((props: MenuProps) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    minWidth: 180,
+    color: 'rgb(55, 65, 81)',
+    boxShadow:
+      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+    '& .MuiMenu-list': {
+      padding: '4px 0',
+    },
+    '& .MuiMenuItem-root': {
+      '& .MuiSvgIcon-root': {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(1.5),
+        ...theme.applyStyles('dark', {
+          color: 'inherit',
+        }),
+      },
+      '&:active': {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          theme.palette.action.selectedOpacity,
+        ),
+      },
+    },
+    ...theme.applyStyles('dark', {
+      color: theme.palette.grey[300],
+    }),
+  },
+}));
 
-    const [isVisible, setVisible] = useState(false);
-    const [selected, setSelected] = useState(options[0]);
+export default function SelectField({children, activeChoice, title}: {children?: React.ReactNode, activeChoice:string, title?: string}) {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
-    <div className='max-w-62.5 relative w-50'>
-
-        <select className='hidden' name={name.toLowerCase()} id={name.toLowerCase()} value={placeholder}></select>
-
-        <p className='font-semibold text-gray-700 mb-3'>{label}</p>
-
-        <div className='rounded-xl shadow-2xs border-[0.5px] border-gray-300 p-2 px-5 bg-white flex items-center justify-between' onClick={()=> setVisible(!isVisible)}>
-            <span>{selected ? selected : placeholder}</span>
-            <ChevronDown width={19} className='text-gray-500' />
-        </div>
-        { isVisible && <ul className='absolute rounded-xl shadow-2xs border-[0.5px] border-gray-300 my-2 bg-white p-1 w-full z-1'>
-            { options.map((option, index) => 
-            <li style={{backgroundColor: selected === option ? '#fa6515cd' : ''}} className={'py-2 px-4 hover:bg-gray-100 rounded-xl flex items-center justify-between'}  key={index} onClick={()=> setSelected(option)}>
-               <span>{option}</span> 
-               {selected === option && <span>✓</span>}
-            </li>)}</ul> }
+    <div className="transition-transform duration-300">
+    {title && <label htmlFor="demo-customized-button" className="font-bold text-gray-700 mb-2 block">{title}</label>}
+      <Button
+        id="demo-customized-button"
+        aria-controls={open ? 'demo-customized-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open}
+        variant="contained"
+        disableElevation
+        onClick={handleClick}
+        endIcon={<ChevronDown />}
+        style={{display:'flex', justifyContent:'space-between', width:'100%', textTransform:'none', background: '', boxShadow: 'var(--shadow-sm)', border:'1px solid var(--gray-300)'
+          
+        }}
+        
+      >
+        {activeChoice}
+      </Button>
+      <StyledMenu
+        id="demo-customized-menu"
+        slotProps={{
+          list: {
+            'aria-labelledby': 'demo-customized-button',
+          },
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+      >
+        {children}
+      </StyledMenu>
     </div>
-    
-  )
+  );
 }
-
-export default SelectField

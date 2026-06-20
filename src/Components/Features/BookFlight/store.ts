@@ -19,8 +19,8 @@ type BookFlightstore = {
 export const useBookFlightStore = create<BookFlightstore>((set)=>({
   flightInfos: {
     travelClass: 'Business',
-    travelFrom: '',
-    travelTo: '',
+    travelFrom: null,
+    travelTo: null,
     departureDate: '',
     returnDate: '',
     passengersCount: 1

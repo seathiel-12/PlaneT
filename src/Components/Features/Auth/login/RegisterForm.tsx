@@ -1,5 +1,5 @@
 import { Mail, User, Lock } from 'lucide-react';
-import TextField from "../../../../Utils/Components/TextField/TextField"
+import TextField from '../../../../Utils/Components/TextField/TextField'; 
 import { Controller, useForm } from 'react-hook-form';
 import { RegisterSchema, type RegisterProps } from './type';
 import { zodResolver } from '@hookform/resolvers/zod';

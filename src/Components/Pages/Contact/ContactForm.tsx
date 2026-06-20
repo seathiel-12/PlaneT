@@ -1,39 +1,51 @@
 import TextField from '../../../Utils/Components/TextField/TextField'
 import Button from '../../../Utils/Components/Button/Button'
 import { Send } from 'lucide-react'
+import { NativeSelect, Textarea, TextInput } from '@mantine/core';
 
 function ContactForm() {
   return (
-    <form action="" className='rounded-2xl p-10 bg-white m-auto shadow-2xs border-[0.5px] border-gray-300 my-0'>
+    <form action="" className='rounded-2xl p-10 bg-white w-full m-auto shadow-2xs border-[0.5px] border-gray-300 my-0'>
        <h2 className='text-2xl playfair-display'>Send us a Message</h2>
 
-       <div className='flex gap-6'>
-            <TextField value={''} label='First Name *' placeholder='John'/>
-            <TextField value={''} label='Last Name *' placeholder='Doe'/>
+       <div className='flex gap-6 my-5'>
+            <TextInput withAsterisk label='First Name' placeholder='John' className="w-full" size="md" />
+            <TextInput withAsterisk label='Last Name' placeholder='Doe' className="w-full" size="md" />
        </div>
 
-       <TextField value={''} label='Email *' placeholder='johnDoe@example.com'/>
+        <TextInput
+            label="Email"
+            withAsterisk
+            placeholder="johnDoe@example.com"
+            className="my-5"
+            size="md"
+       />
 
-       <TextField value={''} label='Phone Number' placeholder='+1 254 366 8854 ' />
+       <TextInput
+            label="Phone Number"
+            placeholder="+1 254 366 8854"
+            className="my-5"
+            size="md"
+       />
 
-        <div className='my-3'>
-            <label htmlFor="subject" className='font-bold'>Subject *</label>
-            <select name="subject" id="subject" className='block rounded-xl bg-gray-50 shadow-xs py-2 px-3 my-2 border-[0.5px] border-gray-300'>
-                    <option value="" selected hidden>Select a topic</option>
-                    {
-                        ['Booking inquiry', 'Customer Support', 'Refund request', 'Feedback', 'Partnership', 'Other'].map( subject => <div>
-                            <option value={subject}>{subject}</option>
-                        </div>)
-                    }
-            </select>
-        </div>
+        <NativeSelect
+            label="Subject"
+            size="md"
+            withAsterisk
+            data={['Booking inquiry', 'Customer Support', 'Refund request', 'Feedback', 'Partnership', 'Other']}
+            className="my-5"
+        />
 
-        <div className='mt-5'>
-            <label htmlFor="message" className='font-bold'>Message *</label>
-            <textarea name="message" id="message" placeholder='How can we help you?' className=' min-h-20 border-[0.5px] border-gray-300 shadow-xs block w-full my-2 p-2 rounded-2xl'></textarea>
-        </div>
-        
-        <Button textContent='Send message' Icon={Send} className='bg-(--sb-blue-250) rounded-2xl w-full my-2 py-2 mt-10 text-white'/>
+        <Textarea
+            label='Message'
+            withAsterisk
+            placeholder="How can we help you?"
+            name="message"
+            id="message"
+            size="md"
+            className="my-5"
+        />
+        <Button textContent='Send message' Icon={Send} className='bg-(--sb-blue-250) rounded-lg w-full my-2 py-3 mt-10 text-white'/>
        
     </form>
   )
