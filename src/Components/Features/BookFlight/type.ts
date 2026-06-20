@@ -13,8 +13,8 @@ export type FlightTicketProps = {
     typeFlight: string
 }
 export type BookFlightProps = {
-    travelFrom: string,
-    travelTo: string,
+    travelFrom: string | null,
+    travelTo: string | null,
     departureDate: string,
     returnDate: string,
     passengersCount: number,

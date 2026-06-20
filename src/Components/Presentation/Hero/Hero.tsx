@@ -9,7 +9,7 @@ function Hero() {
         support: "24/7",
     }
   return (
-    <div>
+    <div className="bg-[linear-gradient(to_bottom,_rgb(225,244,251)_10%,_var(--color-gray-50)_95%)]">
         <div className='flex items-center gap-2 px-4 py-1.25 rounded-full border border-gray-300 w-max m-auto mt-20 scale-90'>
             <Plane width={20} stroke='blue'/>            
             <p className='text-gray-500'>Your gateway to Global travel</p>
@@ -21,7 +21,7 @@ function Hero() {
         
         <SearchBar/>
 
-        <div className='flex justify-center gap-20 mt-16 mb-20 relative -z-1'>
+        <div className='flex justify-center gap-20 mt-16 mb pb-20 relative -z-1'>
             { Object.entries(stats).map(([key, value]) => (
                 <div key={key} className='text-center'>
                     <h2 className='text-4xl font-bold text-blue-500'>{value}</h2>

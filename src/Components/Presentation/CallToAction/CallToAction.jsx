@@ -1,5 +1,6 @@
 import { MoveRight, Plane, Sparkles } from 'lucide-react'
 import React from 'react'
+import { NavLink, redirect } from 'react-router';
 
 function CallToAction() {
   return (
@@ -13,8 +14,12 @@ function CallToAction() {
         <p className='text-white opacity-70 text-xl w-1/2 m-auto my-4'>Join millions of travelers who have discovered the world with PlaneT. Book your next adventure today and experience travel made simple.</p>
         
         <div className='flex items-center gap-3 justify-center mt-5'>
-            <button className='flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-(--sb-blue-200)'><Plane/> Book Your Flight</button>
-            <button className='flex items-center gap-2 text-white rounded-xl border border-(--sb-fluide-white) px-4 py-3'>Explore destinations<MoveRight/></button>
+            <NavLink
+                to={'/book-flight'}
+             className='flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-(--sb-blue-200) hover:opacity-90'><Plane/> Book Your Flight</NavLink>
+            <NavLink 
+                to={'/destinations'}
+                className='flex items-center gap-2 text-white rounded-xl border border-(--sb-fluide-white) px-4 py-3 hover:bg-[#e1e1e165]'>Explore destinations<MoveRight/></NavLink>
         </div>
 
         <ul className='list-disc text-left flex justify-center gap-30 mt-10 text-white text-lg opacity-60'>

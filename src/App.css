@@ -40,7 +40,7 @@ body{
   font-family: 'Poppins', sans-serif;
   overflow-y: scroll;
   overflow-x: hidden;
-  background: linear-gradient(to bottom,rgb(225, 244, 251) 60%, white);
+  background: linear-gradient(180deg, #e1f4fb , white );
   background-repeat: no-repeat;
   padding-bottom: 50px;
 }
@@ -56,7 +56,16 @@ button{
 .sizing-animation{
   animation: sizing 2s ease-in-out forwards;
 }
-
+.css-1014916-MuiPickersInputBase-root-MuiPickersOutlinedInput-root{
+  border-radius: 10px!important;
+  padding-block: 0px!important;
+}
+.css-1014916-MuiPickersInputBase-root-MuiPickersOutlinedInput-root div{
+  padding-block: 10px!important;
+}
+.css-1ysp02-MuiButtonBase-root-MuiIconButton-root{
+  transform: scale(90%);
+}
 @keyframes sizing {
   to{
     height: 100%;
@@ -83,3 +92,19 @@ button{
     color: white;
   }
 }
+
+.slide-left{
+  animation: slide-left .4s forwards ease-in-out;
+}
+
+@keyframes slide-left {
+  from{
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to{
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
