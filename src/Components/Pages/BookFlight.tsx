@@ -33,7 +33,7 @@ function BookFlight() {
     const [activeStep, setActiveStep] = useState(0);
     const [levelSlider, setLevelSlider] = useState(0);
     const [proceedToPayment, setProceedToPayment] = useState(false)
-    const {setFlightSelectedInfos} = useBookFlightStore();
+    const {setFlightSelectedInfos, flightSelected} = useBookFlightStore();
 
     const ticketMockProps: FlightTicketProps[] = [{
         company: 'Air France',
@@ -112,7 +112,13 @@ function BookFlight() {
     useEffect(()=> {
         if(activeStep < 3)
             setProceedToPayment(false);
-    }, [activeStep])
+    }, [activeStep]);
+
+    useEffect(()=>{
+        if(flightSelected){
+            setActiveStep(2);
+        }
+    },[flightSelected])
     
   return (
     <div className='py-10 bg-gray-50'>

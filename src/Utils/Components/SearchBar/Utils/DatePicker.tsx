@@ -10,7 +10,7 @@ interface DatePickerProps {
 
 export default function DatePicker({ label, onchange, minDate }: DatePickerProps) {
   return (
-    <div className='w-1/2'>
+    <div className='w-full'>
         <div className=' rounded-2xl p-2 text-center border text-white font-bold border-gray-300 bg-linear-to-r to-(--sb-blue-100) from-(--sb-blue-50)'>{label}</div>  
 
         <LocalizationProvider

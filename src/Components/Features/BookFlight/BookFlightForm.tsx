@@ -10,9 +10,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import dayjs from 'dayjs';
-import { styled } from '@mui/material/styles';
 
-const cities = ['New York (JFK)', 'Paris (CDG)', 'Dubai', 'Tokyo', 'London', 'Sydney', 'Singapour', 'Los Angeles']
+const cities = ['New York (JFK)', 'Paris (CDG)', 'Japan (JPY)', 'Dubai', 'Tokyo', 'London', 'Sydney', 'Singapour', 'Los Angeles']
 
 
 const BookFlightForm = () => {
@@ -21,7 +20,7 @@ const BookFlightForm = () => {
     const { setActiveStep } = useStepperContext();
     const [oneWay, setOneWay] = useState(false);
 
-    const {flightInfos, setFlightInfos} = useBookFlightStore();
+    const {flightInfos, setFlightInfos, isBooked } = useBookFlightStore();
     
     const switchDestinations = () => {
         if(!(flightInfos.travelFrom || flightInfos.travelTo))
@@ -31,9 +30,9 @@ const BookFlightForm = () => {
         const from = flightInfos.travelFrom;
 
         setFlightInfos({...flightInfos, travelTo: from, travelFrom: to});
-        
     }
     
+
   return (
     <form className='rounded-2xl shadow-xl bg-white p-10 my-5 mt-10 ' >
         <div className='flex items-center justify-between'>
@@ -69,7 +68,6 @@ const BookFlightForm = () => {
                             value={label === 'From' ? (flightInfos.travelFrom) : (flightInfos.travelTo)}
                             onChange={(value)=> {
                                     if(label === 'From'){
-                                        console.log('h')
                                         setFlightInfos({...flightInfos, travelFrom: value});
                                         return
                                     }
@@ -96,6 +94,7 @@ const BookFlightForm = () => {
                             </label>
                         }>
                             <DesktopDatePicker
+                                value={label === 'Departure' ? (dayjs(flightInfos.departureDate)) : (dayjs(flightInfos.returnDate))}
                                 onChange={(value)=> {
                                     if(label === 'Departure'){
                                         setFlightInfos({...flightInfos, departureDate: value?.toString() ?? ''});
@@ -121,7 +120,7 @@ const BookFlightForm = () => {
                 }
                 onChange={(value)=>setFlightInfos({...flightInfos, passengersCount: Number(value?.charAt(0) ?? 1)})}
                 data={Array(8).fill(0).map( (elem, index) => `${index + 1} Passenger (s)`)}
-                defaultValue={'1 Passenger (s)'}
+                defaultValue={`${flightInfos.passengersCount} Passenger (s)`}
                 size="md"
                 className="w-max"
             />
