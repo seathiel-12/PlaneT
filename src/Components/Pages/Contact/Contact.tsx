@@ -53,9 +53,9 @@ function Contact() {
 
         <div className='grid grid-cols-2 m-auto gap-10 mt-20 w-[75%]'>
             <ContactForm/>
-            <div className='max-h-full flex flex-col gap-7'>
+            <div className='max-h-full flex flex-col gap-7 rounded-lg'>
                 <div className='rounded-2xl shadow-xs border-[0.5px] border-gray-300 w-full bg-white flex h-full'>
-                    <div className='text-center m-auto bg-gray-100 w-full my-3 font-bold text-gray-500 py-20'>Interactive map</div>
+                    <iframe className="rounded-lg" style={{border:0}} src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d2309289.7551124715!2d37.38523765!3d55.5817222!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2sru!4v1785520486826!5m2!1sfr!2sru" width="600" height="250" allowFullScreen loading="lazy" referrerPolicy="strict-origin-when-cross-origin"></iframe>
                 </div>
 
                 <div className='w-full rounded-2xl border-[0.5px] border-gray-300 py-7 px-7 bg-white shadow-xs min-h-max'>

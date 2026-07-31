@@ -135,7 +135,6 @@ export const PassengerSetting = () => {
         const amountOptions = ((luggageSettings.find((luggage)=>luggage.title === passengersSetting.luggage)?.price ?? 0) + (passengersSetting.insurance ? insurancePrice : 0)) *  passengersCount;
 
         setPricePlus(amountOptions);
-        console.log(amountOptions)
     }, [passengersSetting])
 
     return (
@@ -150,7 +149,7 @@ export const PassengerSetting = () => {
                                 <label onClick={()=>{
                                     setPassengersSetting({...passengersSetting, seat:title})
                                 }} htmlFor={title} className={(passengersSetting.seat === title ? 'bg-(--sb-blue-fade-4) border-(--sb-blue-250)' : 'border-gray-200') + ' flex gap-4 items-baseline rounded-2xl border-[0.5px]  p-5 py-4'} key={index}>
-                                    <input checked={title === passengersSetting.seat} className='scale-130 top-[7.5%] relative' type="radio" name="seat" id={title} />
+                                    <input onChange={()=>{}} checked={title === passengersSetting.seat} className='scale-130 top-[7.5%] relative' type="radio" name="seat" id={title} />
                                     <div>
                                         <p className='font-semibold'>{title}</p>
                                         <p className=' text-gray-500'>{subtitle}</p>
@@ -175,7 +174,7 @@ export const PassengerSetting = () => {
                             <label onClick={()=>{
                                 setPassengersSetting({...passengersSetting, luggage: title})
                             }} htmlFor={title} className={(passengersSetting.luggage === title ? 'bg-(--sb-blue-fade-4) border-(--sb-blue-250)' : 'border-gray-200') + ' flex gap-4 items-baseline rounded-2xl border-[0.5px]  p-5 py-4'} key={index}>
-                                <input checked={title === passengersSetting.luggage} className='scale-130 top-[7.5%] relative' type="radio" name="luggage" id={title} />
+                                <input onChange={()=>{}} checked={title === passengersSetting.luggage} className='scale-130 top-[7.5%] relative' type="radio" name="luggage" id={title} />
                                 <div className='w-full'>
                                     <p className='font-semibold flex justify-between w-full'><span>{title}</span> <span className='text-(--sb-blue-250) font-medium'>{price === 0 ? 'Included' : `+${price}$/person`}</span></p>
                                     <p className=' text-gray-500'>{subtitle}</p>

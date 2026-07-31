@@ -4,16 +4,17 @@ import type { FlightTicketProps, PassengerSettings } from "./type"
 
 type BookFlightstore = {
   flightInfos: BookFlightProps,
-  flightSelected: FlightTicketProps,
+  flightSelected: FlightTicketProps | undefined,
   passengersInfos: PassengersInfosProps[],
   passengersSetting: PassengerSettings,
   price: number,
+  isBooked:boolean,
   setFlightInfos: (value:BookFlightProps)=> void,
   setFlightSelectedInfos: (value: FlightTicketProps)=> void,
   setPassengersInfos: (num:number, props:string, value: string | number)=> void,
   setPassengersSetting: (value: PassengerSettings)=> void,
   setPricePlus: (amount:number) => void,
-
+  setIsBooked: (isBooked:boolean)=>void
 }
 
 export const useBookFlightStore = create<BookFlightstore>((set)=>({
@@ -25,18 +26,7 @@ export const useBookFlightStore = create<BookFlightstore>((set)=>({
     returnDate: '',
     passengersCount: 1
   },
-  flightSelected: {
-        company: 'Air France',
-        classTravel: 'Business',
-        departureAt: new Date().toUTCString(),
-        landingAt: new Date().toUTCString(),
-        duration: '7h 30min',
-        from: 'Paris CDG',
-        to: 'Japan JPY',
-        price: 869,
-        typeFlight:'Direct',
-        seatsLeft: '32'
-    },
+  flightSelected: undefined,
   passengersInfos: [{
     num: 1,
     firstname: '',
@@ -53,6 +43,7 @@ export const useBookFlightStore = create<BookFlightstore>((set)=>({
     insurance: false
   },
   price: 0,
+  isBooked: false,
   proceedToPayment: false,
   setFlightInfos: (value)=> set({flightInfos: {...value}}),
   setFlightSelectedInfos: (value)=> {set({flightSelected: {...value}})},
@@ -60,6 +51,7 @@ export const useBookFlightStore = create<BookFlightstore>((set)=>({
     set((state)=>({passengersInfos: state.passengersInfos.map((passenger, index)=> index + 1 === num ? {...passenger, [props]: value} : passenger )}))
   },
   setPassengersSetting: (value)=> {set({passengersSetting: {...value}})},
-  setPricePlus: (amount)=> {set((state)=>({price: state.flightSelected.price + amount}))} 
+  setPricePlus: (amount)=> {set((state)=>({price: (state?.flightSelected?.price ?? 0) + amount}))} ,
+  setIsBooked: (value) => {set(()=>({isBooked:value}))}
 } 
 ))

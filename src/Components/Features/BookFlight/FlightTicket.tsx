@@ -3,6 +3,8 @@ import type { FlightTicketProps } from './type';
 import { formatNumber } from '../../../Utils/Functions/formatNumber';
 import type { FC } from 'react';
 import Button from '../../../Utils/Components/Button/Button';
+import { Menu, Select } from '@mantine/core';
+import { useBookFlightStore } from './store';
 
 type FlightTicketType = {
     variant:'primary' | 'secondary',
@@ -87,7 +89,7 @@ export const FromToDetails:React.FC<FlightTicketProps> = ({departureAt, from, du
 }
 
 export const PricePerSeat:React.FC<FlightTicketType> = ({flight, onSelect, variant})=> {
-
+    const {setFlightInfos, flightInfos} = useBookFlightStore();
     return (
         <div className=' text-right border-l-[0.5px] border-l-gray-300 pl-10 min-w-max'>
             <p className='text-[14px] text-gray-500'>Per person</p>
@@ -97,13 +99,60 @@ export const PricePerSeat:React.FC<FlightTicketType> = ({flight, onSelect, varia
                 <span>{flight.seatsLeft} seats left</span>
             </div>
             <div className='mt-5'>
-                <Button
-                    textContent={variant === 'primary' ? 'Select' : 'Book'}
-                    Icon={variant === 'secondary' ? ArrowRight : ''}
-                    Iposition="right"
-                    onClick={onSelect}
-                    className={'rounded-xl py-1 px-3 shadow-xs border-[0.5px] border-gray-300 flex justify-self-end ' + (variant === 'secondary' ? 'bg-(--sb-blue-250) text-white py-2 px-3' : '')}
-                />
+                {
+                    variant === 'secondary' &&
+                    <Menu shadow="md" closeOnItemClick={false} closeOnEscape={false}>
+                        <Menu.Target>
+                        <Button
+                            textContent={'Book'}
+                            Icon={ArrowRight}
+                            Iposition="right"
+                            className={'rounded-xl shadow-xs border-[0.5px] border-gray-300 flex justify-self-end bg-(--sb-blue-250) text-white py-2 px-3'}
+                        />
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                            <form>
+                                {/* <Select
+                                    label="Passengers"
+                                    placeholder="Pick value"
+                                    data={Array(8).fill(0).map((val, index)=> `${index+1} passenger(s)`)}
+                                    value={`${flightInfos.passengersCount} passenger(s)`}
+                                    onChange={(value)=>{
+                                        if(value){
+                                            setFlightInfos({...flightInfos, passengersCount: Number(value?.charAt(0)) ?? 1});
+                                            onSelect();
+                                        }                               
+                                    }}  
+                                /> */}
+                                {
+                                    Array(8).fill(0).map((val, index)=> <Menu.Item 
+                                    key={index}
+                                    onClick={(e)=>{
+                                        if(e.currentTarget){
+                                                setFlightInfos({travelFrom: flight.from, travelTo: flight.to, departureDate: flight.departureAt, returnDate: flight.landingAt, travelClass: flight.classTravel,
+                                                passengersCount: index + 1
+                                            });
+                                            onSelect();
+                                        } 
+                                    }}>{index+1} passenger(s)</Menu.Item>)
+                                }
+                            </form>
+                        </Menu.Dropdown>
+                     </Menu>
+                }
+                {
+                    variant === 'primary' &&
+                    <Button
+                        textContent={variant === 'primary' ? 'Select' : 'Book'}
+                        Icon={''}
+                        Iposition="right"
+                        onClick={()=>{
+                            onSelect();
+                        }}
+                        className={'rounded-xl py-1 px-3 shadow-xs border-[0.5px] border-gray-300 flex justify-self-end'}
+                    /> 
+                }
+                
             </div>
         </div>
     )

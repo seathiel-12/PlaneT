@@ -1,41 +1,58 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, type CSSProperties, useEffect} from "react";
+import { useFlightSearchStore } from "../SearchBar/useFlightSearchStore";
 
-const DAYS = ["S", "M", "T", "W", "T", "F", "S"];
-const MONTHS = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December"
+export type DateValue = Date | null;
+
+
+type PresetKey = "this-week" | "last-week" | "last-7" | "current-month" | "next-month" | "reset";
+
+type CalendarMonthProps = {
+  year: number;
+  month: number;
+  startDate: DateValue;
+  endDate: DateValue;
+  hoverDate: DateValue;
+  onDayClick: (date: Date) => void;
+  onDayHover: (date: DateValue) => void;
+  today: Date;
+};
+
+const DAYS: string[] = ["S", "M", "T", "W", "T", "F", "S"];
+const MONTHS: string[] = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
 ];
 
-function isSameDay(a, b) {
+function isSameDay(a: DateValue, b: DateValue): boolean {
   if (!a || !b) return false;
   return a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
 }
 
-function isInRange(date, start, end) {
+function isInRange(date: DateValue, start: DateValue, end: DateValue): boolean {
   if (!start || !end || !date) return false;
   const [s, e] = start <= end ? [start, end] : [end, start];
   return date > s && date < e;
 }
 
-function startOfDay(date) {
+function startOfDay(date: Date | string): Date {
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
   return d;
 }
 
-function getCalendarDays(year, month) {
+function getCalendarDays(year: number, month: number): Array<Date | null> {
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const cells = [];
+  const cells: Array<Date | null> = [];
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
   return cells;
 }
 
-function CalendarMonth({ year, month, startDate, endDate, hoverDate, onDayClick, onDayHover, today }) {
-  const cells = useMemo(() => getCalendarDays(year, month), [year, month]);
+function CalendarMonth({ year, month, startDate, endDate, hoverDate, onDayClick, onDayHover, today }: CalendarMonthProps) {
+  const cells = useMemo<Array<Date | null>>(() => getCalendarDays(year, month), [year, month]);
 
   return (
     <div style={{ minWidth: 280 }}>
@@ -53,7 +70,8 @@ function CalendarMonth({ year, month, startDate, endDate, hoverDate, onDayClick,
           const isEnd = isSameDay(date, endDate);
           const isToday = isSameDay(date, today);
           const effectiveEnd = endDate || hoverDate;
-          const inRange = isInRange(startOfDay(date),
+          const inRange = isInRange(
+            startOfDay(date),
             startDate ? startOfDay(startDate) : null,
             effectiveEnd ? startOfDay(effectiveEnd) : null
           );
@@ -61,7 +79,6 @@ function CalendarMonth({ year, month, startDate, endDate, hoverDate, onDayClick,
 
           let bg = "transparent";
           let color = "black";
-          let borderRadius = "50%";
           let rangeBg = "transparent";
 
           if (isSelected) {
@@ -75,11 +92,6 @@ function CalendarMonth({ year, month, startDate, endDate, hoverDate, onDayClick,
             rangeBg = "rgba(96, 165, 250, 0.12)";
           }
 
-          // Round range caps
-          let rangeBorderRadius = "0";
-          if (isStart) rangeBorderRadius = "50% 0 0 50%";
-          else if (isEnd) rangeBorderRadius = "0 50% 50% 0";
-
           return (
             <div
               key={i}
@@ -87,7 +99,6 @@ function CalendarMonth({ year, month, startDate, endDate, hoverDate, onDayClick,
               onMouseEnter={() => onDayHover(date)}
               onMouseLeave={() => onDayHover(null)}
             >
-              {/* Range background strip */}
               {(inRange || isStart || isEnd) && (
                 <div style={{
                   position: "absolute", top: "50%", left: 0, right: 0,
@@ -128,89 +139,158 @@ function CalendarMonth({ year, month, startDate, endDate, hoverDate, onDayClick,
   );
 }
 
-export default function DateRangePicker() {
+export const DateRangePicker= () => {
   const today = startOfDay(new Date());
+  const [viewYear, setViewYear] = useState<number>(today.getFullYear());
+  const [viewMonth, setViewMonth] = useState<number>(today.getMonth() > 0 ? today.getMonth() - 1 : 0);
+  const {flightSearchInfos, setFlightSearchInfos} = useFlightSearchStore();
+  const startDate = flightSearchInfos.dates?.startDate || null;
+  const endDate = flightSearchInfos.dates?.endDate || null;
 
-  const [viewYear, setViewYear] = useState(today.getFullYear());
-  const [viewMonth, setViewMonth] = useState(today.getMonth() > 0 ? today.getMonth() - 1 : 0);
 
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [hoverDate, setHoverDate] = useState(null);
-  const [selecting, setSelecting] = useState(false); // false = picking start, true = picking end
+  const [internalStartDate, setInternalStartDate] = useState<DateValue>(startDate ?? null);
+  const [internalEndDate, setInternalEndDate] = useState<DateValue>(endDate ?? null);
+  const [hoverDate, setHoverDate] = useState<DateValue>(null);
+  const [selecting, setSelecting] = useState<boolean>(false);
+  const resolvedStartDate = startDate ?? internalStartDate;
+  const resolvedEndDate = endDate ?? internalEndDate;
 
   const leftYear = viewYear;
   const leftMonth = viewMonth;
   const rightMonth = viewMonth === 11 ? 0 : viewMonth + 1;
   const rightYear = viewMonth === 11 ? viewYear + 1 : viewYear;
 
-  function handleDayClick(date) {
+ 
+
+  const updateDate = (value: DateValue, kind: "start" | "end") => {
+    if (kind === "start") {
+      setFlightSearchInfos((prev) => ({
+        ...prev,
+        dates:{
+          endDate: prev.dates?.endDate ?? null,
+          startDate:value,
+        },
+        flexible: value ? undefined : prev.flexible
+      }));
+
+      setInternalStartDate(value);
+    } else {
+      setFlightSearchInfos((prev) => ({
+        ...prev,
+        dates:{
+          startDate: prev.dates?.startDate ?? null,
+          endDate:value,
+        },
+        flexible: value ? undefined : prev.flexible
+      }));
+      setInternalEndDate(value);
+    }
+  };
+
+  function restart() {
+    updateDate(null, "start");
+    updateDate(null, "end");
+    setSelecting(false);
+    setHoverDate(null);
+  }
+
+  function handleDayClick(date: Date) {
     if (!selecting) {
-      setStartDate(startOfDay(date));
-      setEndDate(null);
+      updateDate(startOfDay(date), "start");
+      updateDate(null, "end");
       setSelecting(true);
     } else {
       const d = startOfDay(date);
-      if (d < startDate) {
-        setEndDate(startDate);
-        setStartDate(d);
+      if (resolvedStartDate && d < resolvedStartDate) {
+        updateDate(resolvedStartDate, "end");
+        updateDate(d, "start");
       } else {
-        setEndDate(d);  
+        updateDate(d, "end");
       }
       setSelecting(false);
     }
   }
 
   function goLeft() {
-    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
-    else setViewMonth(m => m - 1);
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear((y: number) => y - 1);
+    } else {
+      setViewMonth((m: number) => m - 1);
+    }
   }
 
   function goRight() {
-    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
-    else setViewMonth(m => m + 1);
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear((y: number) => y + 1);
+    } else {
+      setViewMonth((m: number) => m + 1);
+    }
   }
 
-  function applyPreset(preset) {
+  function applyPreset(preset: PresetKey) {
     const now = startOfDay(new Date());
     const dow = now.getDay();
     switch (preset) {
       case "this-week": {
-        const s = new Date(now); s.setDate(now.getDate() - dow);
-        const e = new Date(s); e.setDate(s.getDate() + 6);
-        setStartDate(s); setEndDate(e); break;
+        const s = new Date(now);
+        s.setDate(now.getDate() - dow);
+        const e = new Date(s);
+        e.setDate(s.getDate() + 6);
+        updateDate(s, "start");
+        updateDate(e, "end");
+        break;
       }
       case "last-week": {
-        const s = new Date(now); s.setDate(now.getDate() - dow - 7);
-        const e = new Date(s); e.setDate(s.getDate() + 6);
-        setStartDate(s); setEndDate(e); break;
+        const s = new Date(now);
+        s.setDate(now.getDate() - dow - 7);
+        const e = new Date(s);
+        e.setDate(s.getDate() + 6);
+        updateDate(s, "start");
+        updateDate(e, "end");
+        break;
       }
       case "last-7": {
-        const s = new Date(now); s.setDate(now.getDate() - 6);
-        setStartDate(s); setEndDate(now); break;
-      }
+        const s = new Date(now);
+        s.setDate(now.getDate() - 6);
+        updateDate(s, "start");
+        updateDate(now, "end");
+        break;
+      } 
       case "current-month": {
         const s = new Date(now.getFullYear(), now.getMonth(), 1);
         const e = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-        setStartDate(s); setEndDate(e); break;
+        updateDate(s, "start");
+        updateDate(e, "end");
+        break;
       }
       case "next-month": {
         const s = new Date(now.getFullYear(), now.getMonth() + 1, 1);
         const e = new Date(now.getFullYear(), now.getMonth() + 2, 0);
-        setStartDate(s); setEndDate(e); break;
+        updateDate(s, "start");
+        updateDate(e, "end");
+        break;
       }
       case "reset":
-        setStartDate(null); setEndDate(null); break;
+        restart();
+        break;
     }
     setSelecting(false);
   }
 
-  function formatDate(d) {
+   useEffect(() => {
+     if (!startDate) {
+      restart();
+    }
+  }, [startDate]);
+
+  function formatDate(d: DateValue) {
     if (!d) return "—";
     return `${MONTHS[d.getMonth()].slice(0, 3)} ${d.getDate()}`;
   }
 
-  const presets = [
+  const presets: Array<{ key: PresetKey; label: string }> = [
     { key: "this-week", label: "This Week" },
     { key: "last-week", label: "Last Week" },
     { key: "last-7", label: "Last 7 Days" },
@@ -222,21 +302,18 @@ export default function DateRangePicker() {
   return (
     <div style={{
       display: "inline-flex",
-      // background: "#111827",
       borderRadius: 16,
       padding: "28px 24px",
       gap: 28,
       fontFamily: "'Inter', 'Segoe UI', sans-serif",
       color: "black",
-      // boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
-      width:'100%'
+      width: '100%'
     }}>
-      {/* Left: Presets */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8, justifyContent: "flex-start", paddingTop: 90 }}>
         {presets.map(p => (
           <button
             key={p.key}
-            onClick={() => applyPreset(p.key)}
+            onClick={() => p.key === 'reset' ? restart() : applyPreset(p.key)}
             style={{
               border: "none",
               borderRadius: 20,
@@ -247,32 +324,28 @@ export default function DateRangePicker() {
               textAlign: "left",
               whiteSpace: "nowrap",
               transition: "background 0.15s, color 0.15s",
-              width:'max-content'
+              width: 'max-content'
             }}
             className="bg-[#b6b6b662] hover:bg-[#374151] hover:text-white"
-            
           >
             {p.label}
           </button>
         ))}
       </div>
 
-      {/* Right: Calendars */}
       <div>
-        {/* Header */}
         <div style={{ marginBottom: 4 }}>
           <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: 1, color: "black", textTransform: "uppercase", marginBottom: 2 }}>
             Select Date Range
           </div>
           <div style={{ fontSize: 28, fontWeight: 700, marginBottom: 20 }}>
-            <span style={{color:'var(--color-gray-400)'}}>{startDate ? formatDate(startDate) : 'Start'}</span>
+            <span style={{ color: 'var(--color-gray-400)' }}>{resolvedStartDate ? formatDate(resolvedStartDate) : 'Start'}</span>
             <span style={{ color: "#60a5fa", margin: "0 8px" }}>–</span>
-            <span style={{ color: "#111827" }}>{endDate ? formatDate(endDate) : 'End'}</span>
+            <span style={{ color: "#111827" }}>{resolvedEndDate ? formatDate(resolvedEndDate) : 'End'}</span>
           </div>
         </div>
 
         <div style={{ display: "flex", gap: 32 }}>
-          {/* Left Calendar */}
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <button onClick={goLeft} style={navBtnStyle}>&#8249;</button>
@@ -281,7 +354,7 @@ export default function DateRangePicker() {
             </div>
             <CalendarMonth
               year={leftYear} month={leftMonth}
-              startDate={startDate} endDate={endDate}
+              startDate={resolvedStartDate} endDate={resolvedEndDate}
               hoverDate={selecting ? hoverDate : null}
               onDayClick={handleDayClick}
               onDayHover={setHoverDate}
@@ -289,10 +362,8 @@ export default function DateRangePicker() {
             />
           </div>
 
-          {/* Divider */}
           <div style={{ width: 1, background: "#1f2937", alignSelf: "stretch" }} />
 
-          {/* Right Calendar */}
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <div style={{ width: 28 }} />
@@ -301,7 +372,7 @@ export default function DateRangePicker() {
             </div>
             <CalendarMonth
               year={rightYear} month={rightMonth}
-              startDate={startDate} endDate={endDate}
+              startDate={resolvedStartDate} endDate={resolvedEndDate}
               hoverDate={selecting ? hoverDate : null}
               onDayClick={handleDayClick}
               onDayHover={setHoverDate}
@@ -312,9 +383,9 @@ export default function DateRangePicker() {
       </div>
     </div>
   );
-}
+};
 
-const navBtnStyle = {
+const navBtnStyle: CSSProperties = {
   background: "transparent",
   border: "none",
   color: "#9ca3af",
@@ -329,3 +400,5 @@ const navBtnStyle = {
   padding: 0,
   lineHeight: 1,
 };
+
+export default DateRangePicker;

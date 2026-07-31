@@ -16,15 +16,15 @@ function Hero() {
         </div>
 
     <div className='mt-10 mb-15'>
-        <h1 className='text-6xl font-bold text-center mt-6 mb-7'>Explore the World with <span className='text-blue-500'>PlaneT</span></h1>
+        <h1 className='text-6xl font-bold text-center mt-6 mb-7'>Explore the World with <span className='text-(--sb-blue-250)'>PlaneT</span></h1>
         <p className='text-gray-600 text-2xl text-center mt-4 px-6 w-[55%] m-auto'>Discover extraordinary destinations, book seamless flights, and create unforgettable memories. Your next adventure is just a click away.</p></div>
-        
-        <SearchBar/>
+            
+            <SearchBar/>        
 
-        <div className='flex justify-center gap-20 mt-16 mb pb-20 relative -z-1'>
+        <div className='flex justify-center gap-25 mt-30 mb pb-20 relative z-1'>
             { Object.entries(stats).map(([key, value]) => (
                 <div key={key} className='text-center'>
-                    <h2 className='text-4xl font-bold text-blue-500'>{value}</h2>
+                    <h2 className='text-5xl font-bold text-(--sb-blue-250)'>{value}</h2>
                     <p className='text-gray-600 capitalize mt-2'>{key}</p>
                 </div>
             )) }

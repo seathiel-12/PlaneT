@@ -43,7 +43,7 @@ function ContactForm() {
             name="message"
             id="message"
             size="md"
-            className="my-5"
+            className="my-5 h-30"
         />
         <Button textContent='Send message' Icon={Send} className='bg-(--sb-blue-250) rounded-lg w-full my-2 py-3 mt-10 text-white'/>
        

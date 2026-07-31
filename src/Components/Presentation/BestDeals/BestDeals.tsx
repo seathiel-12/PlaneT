@@ -4,6 +4,8 @@ import { FlightTicket } from "../../Features/BookFlight/FlightTicket";
 import type { FlightTicketProps } from "../../Features/BookFlight/type";
 import { Link } from "react-router";
 import { Button } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
+import { useBookFlightStore } from "../../Features/BookFlight/store";
 
 const BestDeals = () => {
     const ticketMockProps: FlightTicketProps[] = [
@@ -13,8 +15,8 @@ const BestDeals = () => {
             departureAt: new Date().toUTCString(),
             landingAt: new Date(Date.now()).toUTCString(),
             duration: '7h 30min',
-            from: 'Paris CDG',
-            to: 'Japan JPY',
+            from: 'Paris (CDG)',
+            to: 'Japan (JPY)',
             price: 869,
             typeFlight:'Direct',
             seatsLeft: '32'
@@ -25,8 +27,8 @@ const BestDeals = () => {
             departureAt: new Date().toUTCString(),
             landingAt: new Date(Date.now()).toUTCString(),
             duration: '7h 30min',
-            from: 'Paris CDG',
-            to: 'Japan JPY',
+            from: 'Paris (CDG)',
+            to: 'Japan (JPY)',
             price: 869,
             typeFlight:'Direct',
             seatsLeft: '32'
@@ -37,8 +39,8 @@ const BestDeals = () => {
             departureAt: new Date().toUTCString(),
             landingAt: new Date(Date.now()).toUTCString(),
             duration: '7h 30min',
-            from: 'Paris CDG',
-            to: 'Japan JPY',
+            from: 'Paris (CDG)',
+            to: 'Japan (JPY)',
             price: 869,
             typeFlight:'Direct',
             seatsLeft: '32'
@@ -49,14 +51,19 @@ const BestDeals = () => {
             departureAt: new Date().toUTCString(),
             landingAt: new Date(Date.now()).toUTCString(),
             duration: '7h 30min',
-            from: 'Paris CDG',
-            to: 'Japan JPY',
+            from: 'Paris (CDG)',
+            to: 'Japan (JPY)',
             price: 869,
             typeFlight:'Direct',
             seatsLeft: '32'
         }
-
-]
+    ]
+    const navigate = useNavigate();
+    const { setFlightSelectedInfos } = useBookFlightStore();
+    const onSelect = (flightSelected: FlightTicketProps) => {
+        setFlightSelectedInfos(flightSelected);        
+        navigate('/book-flight');
+    }
   return (
     <div className="py-20 px-20 bg-gray-50">
         <Bubble text="Featured Flights"/>
@@ -65,7 +72,7 @@ const BestDeals = () => {
 
         <div className="grid grid-cols-2 gap-10 mt-10">
             {
-                ticketMockProps.map((ticket, index)=> <div key={index}><FlightTicket onSelect={()=>{}} flight={ticket} variant='secondary' /></div>)
+                ticketMockProps.map((ticket, index)=> <div key={index}><FlightTicket onSelect={()=>onSelect(ticket)} flight={ticket} variant='secondary' /></div>)
             }
         </div>
         
