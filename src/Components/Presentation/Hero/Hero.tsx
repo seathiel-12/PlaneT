@@ -1,5 +1,6 @@
 import { Plane } from 'lucide-react'
 import SearchBar from '../../../Utils/Components/SearchBar/SearchBar';
+import SplitText from '../../../Utils/Components/SplitText/SplitText';
 
 function Hero() {
     const stats = {
@@ -16,7 +17,23 @@ function Hero() {
         </div>
 
     <div className='mt-10 mb-15'>
-        <h1 className='text-6xl font-bold text-center mt-6 mb-7'>Explore the World with <span className='text-(--sb-blue-250)'>PlaneT</span></h1>
+
+        <div className="w-max m-auto flex justify-center items-center gap-3">
+            <SplitText
+            text='Explore the World with'
+            className="text-6xl font-bold text-center mt-6 mb-7"
+            delay={20}
+            duration={0.7}
+            ease="power3.out"
+            splitType="chars"
+            from={{ opacity: 0, y: 40 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.1}
+            rootMargin="-100px"
+            textAlign="center"
+            />
+            <p className='text-(--sb-blue-250) text-6xl font-bold h-max'>PlaneT</p>
+        </div>
         <p className='text-gray-600 text-2xl text-center mt-4 px-6 w-[55%] m-auto'>Discover extraordinary destinations, book seamless flights, and create unforgettable memories. Your next adventure is just a click away.</p></div>
             
             <SearchBar/>        
