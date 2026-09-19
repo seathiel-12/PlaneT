@@ -1,5 +1,6 @@
-import type { Control } from 'react-hook-form';
-import { z } from 'zod/v4';
+import type { UseFormReturn } from 'react-hook-form';
+import type { z } from 'zod/v4';
+import { BookFlightSchema, PassengerFormSchema, PassengerInfoSchema, PassengerSettingsSchema } from './validation';
 export type FlightTicketProps = {
     company: string, 
     classTravel: 'Economy'| 'Business' | 'First Class',
@@ -9,38 +10,22 @@ export type FlightTicketProps = {
     duration: string,
     to: string,
     price: number,
-    seatsLeft: string
+    seatsLeft: number
     typeFlight: string
 }
-export type BookFlightProps = {
-    travelFrom: string | null,
-    travelTo: string | null,
-    departureDate: string,
-    returnDate: string,
-    passengersCount: number,
-    travelClass: 'Business' | 'Economy' | 'First Class' | string,
-}
+export type BookFlightProps = z.infer<typeof BookFlightSchema>;
 
-export type PassengerInfosFormProps ={
+export type PassengerInfosFormProps = {
     num: number,
-    control: Control<PassengersInfosProps>,
+    form: UseFormReturn<PassengerFormProps, undefined, PassengerFormProps>,
 }
 
-export type PassengerSettings = {
-    seat: string,
-    luggage: string,
-    insurance: boolean
+export type PassengerSettingsFormProps = {
+    form: UseFormReturn<PassengerFormProps, undefined, PassengerFormProps>,
 }
 
-export const PassengerInfosSchema = z.object({
-    num: z.number(),
-    firstname: z.string().min(2, {error: 'Name required!'}),
-    lastname: z.string().min(2, {error: 'Lastname required!'}),
-    passportNumber: z.string().min(6, {error: 'Invalid passport number!'}),
-    nationality: z.string(),
-    bornAt: z.string(),    
-    email: z.email(), 
-    phoneNumber: z.string().min(10, {error: 'Invalid format number!'})   
-})
+export type PassengerSettings = z.infer<typeof PassengerSettingsSchema>;
+export type PassengerInfo = z.infer<typeof PassengerInfoSchema>;
+export type PassengerFormProps = z.infer<typeof PassengerFormSchema>;
 
-export type PassengersInfosProps = z.infer<typeof PassengerInfosSchema>
+export type PassengersInfosProps = PassengerInfo[];

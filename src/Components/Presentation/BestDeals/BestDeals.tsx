@@ -1,82 +1,84 @@
-import { ArrowRight } from "lucide-react";
 import Bubble from "../../../Utils/Components/Bubble/Bubble";
 import { FlightTicket } from "../../Features/BookFlight/FlightTicket";
-import type { FlightTicketProps } from "../../Features/BookFlight/type";
-import { Link } from "react-router";
-import { Button } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { useBookFlightStore } from "../../Features/BookFlight/store";
+import { shadowRevealOnScroll } from "../../../Utils/Components/AnimationComponent/ShadowReveal";
+import { routeMatcher } from "../../router";
+import type { Flight } from "../../../types";
+import { useEffect, useRef, useState } from "react";
+import apiFetch from "../../../Utils/Functions/apiFetch";
+import { useQuery } from "@tanstack/react-query";
+import { LoadingSkeletonLarge } from "../../../Utils/Components/AnimationComponent/LoadingStates/LoadingSkeletonLarge";
+import { useToasting } from "../../../Utils/Functions/useToasting";
 
-const BestDeals = () => {
-    const ticketMockProps: FlightTicketProps[] = [
-        {
-            company: 'Air France',
-            classTravel: 'Business',
-            departureAt: new Date().toUTCString(),
-            landingAt: new Date(Date.now()).toUTCString(),
-            duration: '7h 30min',
-            from: 'Paris (CDG)',
-            to: 'Japan (JPY)',
-            price: 869,
-            typeFlight:'Direct',
-            seatsLeft: '32'
-        },
-        {
-            company: 'Air France',
-            classTravel: 'Business',
-            departureAt: new Date().toUTCString(),
-            landingAt: new Date(Date.now()).toUTCString(),
-            duration: '7h 30min',
-            from: 'Paris (CDG)',
-            to: 'Japan (JPY)',
-            price: 869,
-            typeFlight:'Direct',
-            seatsLeft: '32'
-        },
-        {
-            company: 'Air France',
-            classTravel: 'Business',
-            departureAt: new Date().toUTCString(),
-            landingAt: new Date(Date.now()).toUTCString(),
-            duration: '7h 30min',
-            from: 'Paris (CDG)',
-            to: 'Japan (JPY)',
-            price: 869,
-            typeFlight:'Direct',
-            seatsLeft: '32'
-        },
-        {
-            company: 'Air France',
-            classTravel: 'Business',
-            departureAt: new Date().toUTCString(),
-            landingAt: new Date(Date.now()).toUTCString(),
-            duration: '7h 30min',
-            from: 'Paris (CDG)',
-            to: 'Japan (JPY)',
-            price: 869,
-            typeFlight:'Direct',
-            seatsLeft: '32'
-        }
-    ]
+ const BestDeals = () => {
     const navigate = useNavigate();
     const { setFlightSelectedInfos } = useBookFlightStore();
-    const onSelect = (flightSelected: FlightTicketProps) => {
+    const cardsRef = useRef<HTMLDivElement | null>(null);
+    const onSelect = (flightSelected: Flight) => {
         setFlightSelectedInfos(flightSelected);        
-        navigate('/book-flight');
+        navigate(`${routeMatcher.booking}?step=2`);
     }
-  return (
-    <div className="py-20 px-20 bg-gray-50">
-        <Bubble text="Featured Flights"/>
-        <h2 className="playfair-display text-4xl text-center mt-6">Today's Best Deals</h2>
-        <p className="text-center text-xl text-gray-500 my-4">Grab these limited-time offers on popular routes before they're gone.</p>
-
-        <div className="grid grid-cols-2 gap-10 mt-10">
-            {
-                ticketMockProps.map((ticket, index)=> <div key={index}><FlightTicket onSelect={()=>onSelect(ticket)} flight={ticket} variant='secondary' /></div>)
+    const {notify} = useToasting();
+    const [flights, setFlights] = useState<Flight[]>([]);
+    const getBestDeals = async () => {
+        try {
+            const data = await apiFetch<Flight[]>('http://localhost:3000/flights', {
+                params: { price_lt: 500 },
+                timeout: 10000,
+            });
+            if (!data.success) {
+                notify('Could not load best deals.', 'error');
+                return;
             }
-        </div>
+            setFlights(Array.isArray(data.body) ? data.body : []);
+            return data.body ?? [];
+        } catch (error) {
+            notify('Could not load best deals.', 'error');
+            return error
+        }
+    };
+
+    const {isLoading} = useQuery({
+        queryKey: ['bestDeals'],
+        queryFn: getBestDeals
+    })
+    useEffect(() => {
+        shadowRevealOnScroll(cardsRef.current, {start: 'top 80%'})
+    }, [flights]);
+
+  return (
+    <div className="bg-gray-50 px-4 py-16 sm:px-8 sm:py-20 lg:px-10">
+        <Bubble text="Featured Flights"/>
+        <h2 className="playfair-display mt-6 text-center text-3xl sm:text-4xl">Today's Best Deals</h2>
+        <p className="my-4 text-center text-base text-gray-500 sm:text-xl">Grab these limited-time offers on popular routes before they're gone.</p>
+
+        {
+            isLoading ? 
+            <div className="mt-10">
+                <LoadingSkeletonLarge/> 
+            </div>
+            :
+            <div>
+                {
+                    Boolean(flights.length) ? 
+                        <div ref={cardsRef} className="mx-auto mt-10 grid w-full grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+                        {
+                            flights.slice(0,4).map((ticket, index)=> <div key={index}><FlightTicket onSelect={()=>onSelect(ticket)} flight={ticket} variant='secondary' /></div>)
+                        }
+                        </div>
+                        :
+                        <div className="bg-white shadow-lg rounded-xl mt-10 py-15">
+                            <img src='/assets/Images/no_results.jpg' className="w-60 block m-auto rounded-full"/>
+                            <p className="mx-auto mt-5 max-w-full px-4 text-center text-xl font-semibold text-gray-500 sm:text-3xl">Soon will be available best deals</p>
+                        </div>
+
+
+                }
+            </div>
+        }
         
-        <Link to={'/destinations'} className="w-max m-auto block">
+        {/* <Link to={'/destinations'} className="w-max m-auto block">
             <Button
                 rightSection={<ArrowRight/>}
                 size="lg"
@@ -88,7 +90,7 @@ const BestDeals = () => {
             >
                 View All Flights
             </Button>
-        </Link>
+        </Link> */}
     </div>
   )
 }

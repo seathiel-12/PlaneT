@@ -55,7 +55,7 @@ function CalendarMonth({ year, month, startDate, endDate, hoverDate, onDayClick,
   const cells = useMemo<Array<Date | null>>(() => getCalendarDays(year, month), [year, month]);
 
   return (
-    <div style={{ minWidth: 280 }}>
+    <div className="date-range-calendar-month" style={{ minWidth: 280 }}>
       <div style={{
         display: "grid", gridTemplateColumns: "repeat(7, 1fr)",
         gap: "2px 0", textAlign: "center"
@@ -169,8 +169,7 @@ export const DateRangePicker= () => {
         dates:{
           endDate: prev.dates?.endDate ?? null,
           startDate:value,
-        },
-        flexible: value ? undefined : prev.flexible
+        }
       }));
 
       setInternalStartDate(value);
@@ -180,8 +179,7 @@ export const DateRangePicker= () => {
         dates:{
           startDate: prev.dates?.startDate ?? null,
           endDate:value,
-        },
-        flexible: value ? undefined : prev.flexible
+        }
       }));
       setInternalEndDate(value);
     }
@@ -242,22 +240,6 @@ export const DateRangePicker= () => {
         updateDate(e, "end");
         break;
       }
-      case "last-week": {
-        const s = new Date(now);
-        s.setDate(now.getDate() - dow - 7);
-        const e = new Date(s);
-        e.setDate(s.getDate() + 6);
-        updateDate(s, "start");
-        updateDate(e, "end");
-        break;
-      }
-      case "last-7": {
-        const s = new Date(now);
-        s.setDate(now.getDate() - 6);
-        updateDate(s, "start");
-        updateDate(now, "end");
-        break;
-      } 
       case "current-month": {
         const s = new Date(now.getFullYear(), now.getMonth(), 1);
         const e = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -292,24 +274,23 @@ export const DateRangePicker= () => {
 
   const presets: Array<{ key: PresetKey; label: string }> = [
     { key: "this-week", label: "This Week" },
-    { key: "last-week", label: "Last Week" },
-    { key: "last-7", label: "Last 7 Days" },
     { key: "current-month", label: "Current Month" },
     { key: "next-month", label: "Next Month" },
     { key: "reset", label: "Reset" },
   ];
 
   return (
-    <div style={{
+    <div className="date-range-picker" style={{
       display: "inline-flex",
       borderRadius: 16,
       padding: "28px 24px",
       gap: 28,
       fontFamily: "'Inter', 'Segoe UI', sans-serif",
       color: "black",
-      width: '100%'
+      width: '100%',
+      boxSizing: "border-box"
     }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, justifyContent: "flex-start", paddingTop: 90 }}>
+      <div className="date-range-presets" style={{ display: "flex", flexDirection: "column", gap: 8, justifyContent: "flex-start", paddingTop: 90 }}>
         {presets.map(p => (
           <button
             key={p.key}
@@ -333,7 +314,7 @@ export const DateRangePicker= () => {
         ))}
       </div>
 
-      <div>
+      <div className="date-range-main">
         <div style={{ marginBottom: 4 }}>
           <div style={{ fontSize: 11, fontWeight: 500, letterSpacing: 1, color: "black", textTransform: "uppercase", marginBottom: 2 }}>
             Select Date Range
@@ -345,12 +326,12 @@ export const DateRangePicker= () => {
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 32 }}>
-          <div>
+        <div className="date-range-months" style={{ display: "flex", gap: 32 }}>
+          <div className="date-range-month date-range-month--left">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <button onClick={goLeft} style={navBtnStyle}>&#8249;</button>
               <span style={{ fontSize: 15, fontWeight: 600 }}>{MONTHS[leftMonth]} {leftYear}</span>
-              <div style={{ width: 28 }} />
+              <button className="date-range-mobile-next" onClick={goRight} style={navBtnStyle} aria-label="Next month">&#8250;</button>
             </div>
             <CalendarMonth
               year={leftYear} month={leftMonth}
@@ -362,9 +343,9 @@ export const DateRangePicker= () => {
             />
           </div>
 
-          <div style={{ width: 1, background: "#1f2937", alignSelf: "stretch" }} />
+          <div className="date-range-divider" style={{ background: "var(--sb-gray-hover)", alignSelf: "stretch" }} />
 
-          <div>
+          <div className="date-range-month date-range-month--right">
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <div style={{ width: 28 }} />
               <span style={{ fontSize: 15, fontWeight: 600 }}>{MONTHS[rightMonth]} {rightYear}</span>

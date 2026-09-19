@@ -86,11 +86,10 @@ export default function SelectField({children, activeChoice, title}: {children?:
         onClick={handleClick}
         endIcon={<ChevronDown />}
         style={{display:'flex', justifyContent:'space-between', width:'100%', textTransform:'none', background: '', boxShadow: 'var(--shadow-sm)', border:'1px solid var(--gray-300)'
-          
         }}
         
       >
-        {activeChoice}
+        <p className=" line-clamp-1">{activeChoice}</p>
       </Button>
       <StyledMenu
         id="demo-customized-menu"

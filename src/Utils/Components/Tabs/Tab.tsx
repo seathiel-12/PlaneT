@@ -1,38 +1,60 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
-function Tabs( {options, current, onclick}: {options: string[], current?:string, onclick: (e:React.MouseEvent<HTMLButtonElement, MouseEvent>)=>void} ) {
-    const ref = useRef<HTMLDivElement>(null);
-    
-    const tabFunc = (e?:React.MouseEvent<HTMLButtonElement, MouseEvent>)=>{
-        
-        if(!e && !current) return;
-        
-        const selected = e?.currentTarget;  
-        let rect = selected?.getBoundingClientRect() ||  document.getElementById(current!)!.getBoundingClientRect();
+type TabsProps = {
+    options: string[];
+    current?: string;
+    onclick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+};
 
-        if(ref.current){
-            ref.current.style.width = `${rect.width}px`;
-            ref.current.style.height = `${rect.height}px`;
-            ref.current.style.top = `${rect.top + window.scrollY}px`;
-            ref.current.style.left = `${rect.left + window.scrollX}px`;
-        }
-    }
+function Tabs({ options, current, onclick }: TabsProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const indicatorRef = useRef<HTMLDivElement>(null);
 
-    useEffect(()=>{
-        tabFunc();
-    }, [current]);
+    const updateIndicator = () => {
+        const container = containerRef.current;
+        const indicator = indicatorRef.current;
+        if (!container || !indicator || options.length === 0) return;
+
+        const activeIndex = Math.max(0, options.indexOf(current ?? ''));
+        const activeTab = container.querySelector<HTMLButtonElement>(
+            `button[data-tab-index="${activeIndex}"]`
+        );
+
+        if (!activeTab) return;
+
+        indicator.style.width = `${activeTab.offsetWidth}px`;
+        indicator.style.height = `${activeTab.offsetHeight}px`;
+        indicator.style.transform = `translate(${activeTab.offsetLeft}px, ${activeTab.offsetTop}px)`;
+    };
+
+    useLayoutEffect(() => {
+        updateIndicator();
+        window.addEventListener('resize', updateIndicator);
+
+        return () => window.removeEventListener('resize', updateIndicator);
+    }, [current, options]);
 
   return (
-    <div className='rounded-xl flex p-0.75 bg-gray-100 w-full'>
-        {options.map((option) => 
-            <button id={option} onClick={(e)=>{
-                e.preventDefault();
-                tabFunc(e)
-                onclick(e);
-            }} key={option} className=' py-1.25 transition-all z-2 w-1/2 text-sm min-w-max'>{option}</button>
-        )}
+    <div ref={containerRef} className='relative rounded-xl flex p-0.75 bg-gray-100 w-full'>
+        <div
+            ref={indicatorRef}
+            aria-hidden='true'
+            className='absolute left-0 top-0 rounded-lg bg-white shadow-md transition-[transform,width,height] duration-300 ease-out pointer-events-none z-0'
+        />
 
-        <div ref={ref} className="absolute bg-white shadow-md transition-all duration-500 rounded-lg z-1"></div>
+        {options.map((option, index) =>
+            <button
+                type='button'
+                id={option}
+                data-tab-index={index}
+                aria-pressed={current === option || (!current && index === 0)}
+                onClick={onclick}
+                key={`${option}-${index}`}
+                className='relative z-10 flex-1 py-1.25 text-sm min-w-0 transition-colors'
+            >
+                <span className='block truncate px-2'>{option}</span>
+            </button>
+        )}
     </div>
   )
 }

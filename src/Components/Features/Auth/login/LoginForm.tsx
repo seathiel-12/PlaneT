@@ -1,12 +1,12 @@
 import { Lock, Mail } from 'lucide-react'
 import { Link } from 'react-router';
-import Google from '../../../../assets/Icons/google-logo.svg';
-import Apple from '../../../../assets/Icons/apple-logo.svg';
 import { Controller, useForm } from 'react-hook-form';
 import { LoginSchema, type LoginProps } from './type';
 import {zodResolver} from '@hookform/resolvers/zod';
 import TextField from '../../../../Utils/Components/TextField/TextField';
 import Button from '../../../../Utils/Components/Button/Button';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 
 function LoginForm() {
@@ -28,8 +28,11 @@ function LoginForm() {
         mode: 'onChange',
         resolver: zodResolver(LoginSchema)
     });
+    const { signIn } = useAuth();
+    const navigate = useNavigate();
     const onSubmit = (data: LoginProps)=> {
-        console.log(data)
+        signIn({ firstname: data.email.split('@')[0], lastname: '', email: data.email });
+        navigate('/home');
     } 
   return (
     <form onSubmit={handleSubmit(onSubmit, (err)=>console.log(err))} className=' m-auto rounded-2xl mt-5 bg-white shadow-lg p-8'>
@@ -41,7 +44,7 @@ function LoginForm() {
             render={({field, fieldState: {error}})=> <TextField value={field.value} errorMessage={error?.message ?? ''} {...emailProps} onChange={field.onChange} /> }
         />
         
-        <div>
+        <div className="mt-3">
          <Controller 
             control={control}
             name='password'
@@ -53,7 +56,7 @@ function LoginForm() {
 
         <Button type='submit' className='bg-(--sb-blue-300) text-white w-full mt-4 py-1.5 rounded-lg' textContent='Sign In' />
 
-        <div className='flex items-center gap-2 w-full mt-3 justify-center text-sm text-gray-500'>
+        {/* <div className='flex items-center gap-2 w-full mt-3 justify-center text-sm text-gray-500'>
             <hr className='w-[30%] border-gray-500 border-[1.25px]' />
             <p>or continue with</p>
             <hr className='w-[30%] border-gray-500 border-[1.25px]' />
@@ -68,7 +71,7 @@ function LoginForm() {
                 <img width={19} height={19} src={Apple} alt="apple logo" />
                 <span>Apple</span>
             </button>
-        </div>
+        </div> */}
     </form>
   )
 }
