@@ -1,0 +1,365 @@
+.expandable-card {
+  position: relative;
+  height: 360px;
+
+  overflow: hidden;
+  border-radius: 16px;
+
+  background: #f4f4f2;
+
+  cursor: pointer;
+
+  z-index: 1;
+  transition: border-radius 0.25s ease;
+}
+
+.expandable-card--expanded {
+  position: fixed;
+
+  top: 25%;
+  left: 20%;
+
+  width: 60%;
+  height: 60%;
+
+  z-index: 100;
+  cursor: default;
+
+  border-radius: 20px;
+}
+
+
+/* -------------------------------------------------- */
+/* Overlay                                            */
+/* -------------------------------------------------- */
+
+.expandable-card__overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 90;
+
+  opacity: 0;
+  visibility: hidden;
+
+  background: rgba(10, 10, 10, 0.45);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+}
+
+.expandable-card--expanded
+  ~ .expandable-card__overlay {
+  pointer-events: auto;
+}
+
+
+/* -------------------------------------------------- */
+/* Preview                                            */
+/* -------------------------------------------------- */
+
+.expandable-card__preview {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+}
+
+.expandable-card__preview-image {
+  position: absolute;
+  inset: 0;
+}
+
+.expandable-card__preview-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.expandable-card__preview-content {
+  position: absolute;
+  inset: 0;
+
+  padding: 24px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.45),
+      transparent 45%
+    );
+}
+
+.expandable-card__category {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+.expandable-card h2 {
+  margin: 0;
+
+  font-size: 28px;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+
+/* -------------------------------------------------- */
+/* Expanded layout                                    */
+/* -------------------------------------------------- */
+
+.expandable-card__expanded-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-width: 350px;
+  width: 100%;
+  height: 100%;
+}
+
+
+/* -------------------------------------------------- */
+/* Media                                              */
+/* -------------------------------------------------- */
+
+.expandable-card__media {
+  min-width: 370px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  background: #111;
+}
+
+
+/* -------------------------------------------------- */
+/* Details                                            */
+/* -------------------------------------------------- */
+
+.expandable-card__details {
+  position: relative;
+
+  min-width: 100%;
+  width: 100%;
+  height: 100%;
+  padding: 48px;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  background: #f4f4f2;
+  color: #111;
+}
+
+.expandable-card__details h2 {
+  max-width: 480px;
+  margin-bottom: 32px;
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.expandable-card__body {
+  max-width: 480px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #665;
+}
+
+
+/* -------------------------------------------------- */
+/* Close                                              */
+/* -------------------------------------------------- */
+
+.expandable-card__close {
+  position: absolute;
+
+  top: 20px;
+  right: 20px;
+
+  width: 40px;
+  height: 40px;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0.07);
+
+  font-size: 22px;
+
+  cursor: pointer;
+}
+
+
+/* -------------------------------------------------- */
+/* Carousel                                           */
+/* -------------------------------------------------- */
+
+.card-carousel {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+}
+
+.card-carousel__viewport {
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+}
+
+.card-carousel__track {
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+
+  transition:
+    transform 500ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.card-carousel__slide {
+  flex: 0 0 100%;
+
+  width: 100%;
+  height: 100%;
+}
+
+.card-carousel__slide img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  user-select: none;
+}
+
+
+/* -------------------------------------------------- */
+/* Carousel controls                                  */
+/* -------------------------------------------------- */
+
+.card-carousel__button {
+  position: absolute;
+
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  cursor: pointer;
+
+  z-index: 2;
+}
+
+.card-carousel__button--prev {
+  left: 20px;
+}
+
+.card-carousel__button--next {
+  right: 20px;
+}
+
+
+.card-carousel__dots {
+  position: absolute;
+
+  left: 50%;
+  bottom: 20px;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  gap: 6px;
+
+  z-index: 2;
+}
+
+.card-carousel__dot {
+  width: 6px;
+  height: 6px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.5);
+
+  cursor: pointer;
+}
+
+.card-carousel__dot--active {
+  background: white;
+}
+
+
+@media (max-width: 1224px) {
+  .expandable-card--expanded{
+    width: 80%;
+    left: 10%;
+  }
+  .expandable-card__details{
+    padding-inline: 30px;
+  }
+}
+
+@media (max-width: 910px) {
+  .expandable-card__expanded-content{
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+  .expandable-card--expanded{
+    height: 80%;
+    top: 15%;
+    max-width: 70%;
+    left: 15%;
+  }
+  .expandable-card__details{
+    display: flex;
+    padding: 15px 0;
+  }
+  .expandable-card__details > div{
+    max-height: 100%;
+    width: 100%;
+    padding-inline: 15px ;
+  }
+  .expandable-card__close{
+    top: 5px; 
+  }
+}
+
+@media (max-width: 600px) {
+  .expandable-card--expanded{
+    max-width: 80%;
+    left: 10%;
+  }
+}

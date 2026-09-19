@@ -2,7 +2,10 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { RouterProvider } from 'react-router';
 import routes from './Components/router.ts';
+import { LanguageProvider } from './contexts/LanguageContext';
 
 createRoot(document.getElementById('root')!).render(
-  <RouterProvider router={routes} />
+  <LanguageProvider>
+    <RouterProvider router={routes} />
+  </LanguageProvider>
 )

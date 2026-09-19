@@ -36,16 +36,16 @@ function AboutUs() {
         }
     ]
   return (
-    <div className='bg-gray-50 p-30'>
+    <div className='bg-gray-50 px-4 py-16 sm:px-8 sm:py-20 lg:p-30 lg:px-10'>
         <p className='font-bold text-gray-600 text-sm rounded-full px-3 py-1 bg-(--sb-gray-fade-2) w-max m-auto'>Why Choose Us</p>
-        <p className='playfair-display text-4xl text-center mt-4'>Travel with Confidence</p>
-        <p className='w-1/3 m-auto text-center text-lg my-5 text-gray-400'>Millions of travelers trust PlaneT for their journeys. Here's why we're the preferred choice.</p>
+        <p className='playfair-display mt-4 text-center text-3xl sm:text-4xl'>Travel with Confidence</p>
+        <p className='mx-auto my-5 w-full max-w-2xl text-center text-base text-gray-400 sm:text-lg'>Millions of travelers trust PlaneT for their journeys. Here's why we're the preferred choice.</p>
 
-        <div className='grid grid-cols-3 gap-10 mt-10'>
+        <div className='mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-10'>
             {
                 specs.map(({Icon, title, subtitle})=> <div key={title} className='cursor-pointer rounded-2xl py-10 px-8 shadow-xs bg-white hover:shadow-lg duration-500'>
                     <div className='bg-(--sb-icon) rounded-xl p-3 w-max'><Icon className='stroke-(--sb-blue-300)' /></div>
-                    <h2 className='font-bold text-2xl my-4'>{title}</h2>
+                    <h2 className='my-4 text-2xl font-bold'>{title}</h2>
                     <p className='text-gray-500'>{subtitle}</p>
                 </div>)
             }

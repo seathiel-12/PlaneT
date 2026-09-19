@@ -1,13 +1,21 @@
-import { ArrowRight, Clock, CreditCard, Lock, MapPin, Plane, Shield } from 'lucide-react'
+import { Clock, CornerRightDown, CreditCard, Lock, MapPin, Plane, Shield } from 'lucide-react'
 import Card from '../../../Utils/Components/Card/Card'
-import TextField from '../../../Utils/Components/TextField/TextField';
 import { useBookFlightStore } from './store';
-import { formatNumber } from '../../../Utils/Functions/formatNumber';
-import { useState, type ReactNode } from 'react';
+import { formatDuration } from '../../../Utils/Functions/formatDuration';
+import { useEffect, useState, type ReactNode } from 'react';
+import { TextInput } from '@mantine/core';
+import { useNavigate } from 'react-router-dom';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { paymentMethodSchema, type PaymentCreditType, type PaymentMyFedaType } from './validation';
+import { routeMatcher } from '../../router';
 
-const PayementForm = () => {
+const PaymentForm = () => {
     const [currentMethod, setCurrentMethod] = useState(0);
-    const [agreement, setAgreement] = useState(false);
+    const {control, formState: {isValid, isLoading}, register} = useForm<PaymentCreditType | PaymentMyFedaType>({
+        resolver: zodResolver(paymentMethodSchema(currentMethod === 0 ? 'credit-card' : 'myfeda')),
+        mode: 'all',
+    });
     const paymentMethod: {title:string, subtitle: string, Icon: typeof CreditCard, render:()=>ReactNode}[] = [
         {
             title: 'Credit Card',
@@ -15,14 +23,29 @@ const PayementForm = () => {
             Icon: CreditCard,
             render: ()=> <Card classname='p-7 bg-white my-5'>
                 <h2 className='text-2xl font-semibold mb-5'>Card Details</h2>
-                <TextField Icon={CreditCard} type='number'  placeholder='1234 5678 9012 3456' label='Card Number' value={''} />
-                <TextField placeholder='John Doe' label='Cardholder Name' value={''} />
-                <div className='grid grid-cols-2 gap-3'>
-                    <TextField type='date' placeholder='MM/YY' label='Expiry Date' value={''} />
-                    <TextField Icon={Lock} type='number' placeholder='123' label='CVV' value={''} />
+                <Controller
+                    name='cardNumber'
+                    control={control}
+                    render={({field, fieldState:{error}})=> <TextInput required className="my-3" leftSection={<CreditCard/>} type='number'  placeholder='1234 5678 9012 3456' label='Card Number' maxLength={16} {...field} error={error?.message ?? error?.root?.message} />}
+                />
+                <Controller
+                    name='cardholderName'
+                    control={control}
+                    render={({field, fieldState:{error}})=> <TextInput required className="my-3" leftSection={<CreditCard/>} type='text'  placeholder='John Doe' label='Cardholder Name' {...field} error={error?.message ?? error?.root?.message} />}
+                />
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                    <Controller
+                        name='expiryDate'
+                        control={control}
+                        render={({field, fieldState:{error}})=> <TextInput required className="my-3" type='date' placeholder='MM/YY' label='Expiry Date' {...field} error={error?.message ?? error?.root?.message} />}
+                    />
+                    <Controller
+                        name='cvv'
+                        control={control}
+                        render={({field, fieldState:{error}})=> <TextInput className="my-3" required leftSection={<Lock/>} type='number' maxLength={3} placeholder='123' label='CVV' {...field} error={error?.message ?? error?.root?.message} />}
+                    />
                 </div>
 
-                <div className='flex items-center gap-2 mt-4 text-lg text-gray-800'><input className='scale-110' type="checkbox" name='saveCard' id='saveCard'/> <label htmlFor="saveCard">Save card for future payments</label></div>
             </Card>
         },
         {
@@ -35,28 +58,47 @@ const PayementForm = () => {
         }
     ];
 
-    const { price, flightSelected:{company, from, to, departureAt, landingAt}, flightInfos: {passengersCount, travelClass}, passengersSetting: {luggage} }= useBookFlightStore();
+    const { price, flightSelected, setIsBooked, flightInfos: {passengersCount, travelClass}, passengersSetting: {luggage}, setFlightSelectedInfos } = useBookFlightStore();
+    const { company = '', fromCountry = '', toCountry = '', departureAt = '', landingAt = '' } = flightSelected ?? {};
     const FEES = 50;
+    const navigate = useNavigate();
+    
+        useEffect(()=>{
+        setFlightSelectedInfos({
+            company: "Air France",
+            classTravel: "Economy",
+            fromCountry: "Paris, France",
+            continent: "America",
+            toCountry: "New York, USA",
+            departureAt: "2026-08-20T08:00:00Z",
+            landingAt: "2026-08-20T12:30:00Z",
+            duration: "4h30",
+            price: 450,
+            typeFlight: "Direct",
+            seatsLeft: 12,
+            city: "New York",
+            rating: 4.2,
+            ratingCount: 128,
+            description: "Vol direct confortable avec service à bord.",
+            caracteristics: ["Wifi", "Repas inclus", "Divertissement"],
+            isLiked: false,
+            isPopular: true,
+            imagePath: ["https://loremflickr.com/1280/720/new-york,usa"]
+        });
+    },[]);
 
-    const formatTravelingDuration = (date1:string, date2: string)=> {
-        
-        if(new Date(date1).getDay() === new Date(date2).getDay())
-            return new Date(date1).toUTCString().slice(0, -7) + ' • ' + formatNumber(new Date(date2).getHours()) + ':' + formatNumber(new Date(date2).getMinutes());
-
-        return date1.slice(0, -7) + ' • ' + date2.slice(0, -7);
-    } 
 
   return (
-    <form className='my-10 flex gap-5'>
-        <div className='w-[65%]'>
+    <form className='my-6 sm:my-10 flex flex-col lg:flex-row gap-5'>
+        <div className='w-full lg:w-[65%] min-w-0'>
             <Card classname='p-5'>
                 <div className='flex items-center gap-2'>
                     <CreditCard className='text-(--sb-blue-250)' width={30} />
                     <h1 className='playfair-display text-2xl'>Payment Method</h1>
                 </div>
 
-                <div className='grid grid-cols-2 gap-4 my-3 w-full p-5'>
-                    {paymentMethod.map(({title, subtitle, Icon})=> <label className='flex items-center gap-3 p-3 py-4 border border-(--sb-blue-250) bg-(--sb-blue-fade-4) rounded-2xl' htmlFor={title}>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 my-3 w-full p-3 sm:p-5'>
+                    {paymentMethod.map(({title, subtitle, Icon})=> <label className='flex items-start sm:items-center gap-3 p-3 py-4 border border-(--sb-blue-250) bg-(--sb-blue-fade-4) rounded-2xl' htmlFor={title}>
                         <input checked={paymentMethod[currentMethod].title === title} onClick={()=> setCurrentMethod(title === 'Credit Card' ? 0 : 1)} type="radio" name='payment' id={title} />
                         <Icon/>
                         <div>
@@ -85,26 +127,43 @@ const PayementForm = () => {
                     <p className='text-2xl font-semibold text-(--sb-blue-250)'>${price + FEES}.00</p>
                 </div>
             </Card>
+
+            <button type="submit" disabled={!isValid} onClick={(event)=>{
+                event.preventDefault();
+                console.log('Test')
+                setIsBooked(true);
+                navigate(routeMatcher.booked);
+            }} className={'flex items-center justify-center gap-2 rounded-xl py-2 bg-(--sb-blue-250) text-white w-full my-5 font-semibold duration-200 hover:scale-95 ' + ( !isValid ? ' opacity-50' : '')}>
+                {   isLoading ?                                             
+                    <div className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
+                    :
+                    <Lock width={20}/>
+                }
+                <span>{`Pay $${price + FEES}.00`}</span>
+            </button>
         </div>
 
-        <div className='w-[33%]'>
+        <div className='w-full lg:w-[33%] min-w-0'>
             <Card classname='py-7 px-5 h-max'>
                 <h2 className='font-semibold text-lg'>Booking Summary</h2>
 
-                <div className='rounded-2xl p-5 bg-(--sb-blue-fade-4) my-5'>
+                    <div className='rounded-2xl p-4 sm:p-5 bg-(--sb-blue-fade-4) my-5'>
                     <div className='flex items-center gap-2 text-xl mb-3'>
                         <Plane width={19} stroke='var(--sb-blue-250)' />
                         <p className='font-semibold'>{company}</p>
                     </div>
 
-                    <div className='flex items-center gap-2 text-[17px] my-2'>
-                        <MapPin stroke='gray' width={20} />
-                        <p className='flex items-center text-gray-400'>{`${from}`} <ArrowRight strokeWidth={1} width={30}/> {`${to}`}</p>
+                    <div>
+                        <div className='flex items-center gap-2 text-[17px] my-2'>
+                            <MapPin stroke='gray' width={25} />
+                            <p className='flex items-center text-gray-400 wrap-break-word w-full'>{fromCountry || 'Paris, France'} <CornerRightDown strokeWidth={1} width={30} className="translate-y-1 shrink-0" /></p>
+                        </div>
+                        <p className="pl-9 sm:pl-15 wrap-break-word">{toCountry || 'New York, USA'}</p>
                     </div>
 
-                    <div className='flex gap-2 text-gray-400 text-[17px] items-baseline my-2'>
-                        <Clock stroke='gray' width={20} className='relative top-1.5' />
-                        <p>{formatTravelingDuration(departureAt, landingAt)}</p>
+                    <div className='flex gap-2 text-gray-400 text-[17px] items-baseline my-2 pl-1'>
+                        <Clock stroke='gray' width={17} className='relative top-1.5' />
+                        <p>{formatDuration(departureAt, landingAt)}</p>
                     </div> 
                 </div>
 
@@ -130,25 +189,19 @@ const PayementForm = () => {
                     {['Free cancellation within 24 hours', `${luggage} baggage included`, 'Seat Selection at check-in', '24/7 customer support'].map(text => <li className='flex items-center gap-2 text-gray-600'><span className='text-xl'>•</span> <span>{text}</span></li>)}
                 </ul>
             </Card>
-            <div className='flex px-1 my-5 items-baseline gap-2 font-semibold text-gray-700'>
-                <input onClick={()=> setAgreement(!agreement)} type="checkbox" name='agreement' id='agreement' className='scale-130 relative top-0.75'/>
+            <div className='flex px-1 my-5 items-start gap-2 text-sm sm:text-base font-semibold text-gray-700'>
+                <input {...register('agreement')} type="checkbox" name='agreement' id='agreement' className='scale-130 relative top-0.75'/>
                 <label htmlFor="agreement">I agree to the <a href="" className='text-(--sb-blue-250) font-semibold hover:underline'>Terms of Service</a> and <a href="" className='text-(--sb-blue-250) font-semibold hover:underline'>Privacy Policy</a>. I understand that my booking is subject to the airline's terms and conditions.</label>
             </div>
 
-            <div className='flex gap-2 rounded-xl p-2 px-4 items-center justify-center bg-(--sb-blue-fade-4)'>
+            <div className='flex gap-2 rounded-xl p-2 px-4 items-start sm:items-center justify-center bg-(--sb-blue-fade-4) text-sm sm:text-base'>
                 <Shield stroke='var(--sb-blue-250)' className='scale-120'/>
                 <p>Your payment is secured with 256-bit SSL encryption.</p>
             </div>
-
-            <button className={'flex items-center justify-center gap-2 rounded-xl py-2 bg-(--sb-blue-250) text-white w-full my-5 font-semibold duration-200 hover:scale-95 ' + ( !agreement ? ' opacity-50' : '')}>
-                <Lock width={20}/>
-                <span>{`Pay $${price +  FEES}.00`}</span>
-            </button>
-
         </div>
         
     </form>
   )
 }
 
-export default PayementForm
+export default PaymentForm

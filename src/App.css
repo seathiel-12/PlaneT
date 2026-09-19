@@ -53,6 +53,23 @@ button{
 .elongation-reversed{
     animation: elongate 1s ease-in-out forwards reverse;
 }
+.clear-destination {
+  width: 0;
+  flex: 0 0 auto;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: width 220ms ease, opacity 160ms ease, transform 220ms ease;
+}
+.clear-destination-visible {
+  width: 31px;
+  opacity: 1;
+  padding: 8px;
+  pointer-events: auto;
+  transform: scaleX(1);
+}
 .sizing-animation{
   animation: sizing 2s ease-in-out forwards;
 }
@@ -97,6 +114,73 @@ button{
   animation: slide-left .4s forwards ease-in-out;
 }
 
+.page-reveal {
+  animation: page-reveal 650ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.page-reveal-delay-1 {
+  animation-delay: 90ms;
+}
+
+.page-reveal-delay-2 {
+  animation-delay: 180ms;
+}
+
+.card-reveal {
+  animation: card-reveal 550ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.auth-form-transition {
+  animation: auth-form-transition 420ms cubic-bezier(.22, 1, .36, 1) both;
+  transform-origin: top center;
+}
+
+@keyframes auth-form-transition {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes page-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes card-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-reveal,
+  .page-reveal-delay-1,
+  .page-reveal-delay-2,
+  .card-reveal {
+    animation: none;
+  }
+
+  .auth-form-transition {
+    animation: none;
+  }
+}
+
 @keyframes slide-left {
   from{
     transform: translateX(20px);
@@ -105,6 +189,85 @@ button{
   to{
     transform: translateX(0);
     opacity: 1;
+  }
+}
+
+.date-range-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.date-range-months {
+  min-width: 0;
+}
+
+.date-range-mobile-next {
+  display: none;
+}
+
+@media (max-width: 820px) {
+  .date-range-picker {
+    display: block !important;
+    padding: 18px 14px !important;
+  }
+
+  .date-range-presets {
+    flex-direction: row !important;
+    gap: 6px !important;
+    margin-bottom: 18px;
+    padding-top: 0 !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: 90%;
+    border-radius: 20px;
+  }
+
+  .date-range-presets::-webkit-scrollbar {
+    display: none;
+  }
+
+  .date-range-presets button {
+    flex: 0 0 auto;
+    padding: 7px 12px !important;
+    font-size: 12px !important;
+  }
+
+  .date-range-months {
+    display: block !important;
+  }
+
+  .date-range-month--right {
+    display: none;
+  }
+
+  .date-range-month--left,
+  .date-range-calendar-month {
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+  .date-range-month--left > div:first-child {
+    margin-bottom: 10px !important;
+  }
+
+  .date-range-mobile-next {
+    display: flex;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 900px) {
+  .date-range-picker {
+    gap: 18px !important;
+    padding: 22px 16px !important;
+  }
+
+
+  .date-range-months {
+    gap: 18px !important;
+  }
+
+  .date-range-calendar-month {
+    min-width: 230px !important;
   }
 }
 

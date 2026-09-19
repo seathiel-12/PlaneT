@@ -1,18 +1,24 @@
 import { useEffect, useRef, useState, useCallback, useMemo, type ReactNode } from 'react';
-import { Calendar, CalendarFold, Search, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import Content from './Utils/Content';
 import dayjs from 'dayjs';
 import { ClickAwayListener } from '@mui/material';
 import { Tab, TabGroup, TabList } from '@headlessui/react';
 import clsx from 'clsx';
-import { Transition } from '@mantine/core';
+import { Modal, Transition } from '@mantine/core';
 import { DateRangePicker, type DateValue } from '../DateRangePicker/DateRangePicker';
 import { Counter } from './Utils/Counter';
 import { useFlightSearchStore } from './useFlightSearchStore';
+import { useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { useNavigate } from 'react-router-dom';
+import { routeMatcher } from '../../../Components/router';
+import { useQuery } from '@tanstack/react-query';
+import apiFetch from '../../Functions/apiFetch';
+import { useBookFlightStore } from '../../../Components/Features/BookFlight/store';
+import { useToasting } from '../../Functions/useToasting';
 
 // Types
 type TravelerType = 'adults' | 'kids' | 'babies' | 'pets';
-type FlexibleDuration = 'A week-end' | 'A week' | 'A month';
 type ActiveTab = 'l1' | 'l2' | 'l3' | undefined;
 
 export type FlightSearchInfosType = {
@@ -20,10 +26,6 @@ export type FlightSearchInfosType = {
     dates: {
         startDate: DateValue;
         endDate: DateValue;
-    };
-    flexible: {
-        from: number[];
-        for: FlexibleDuration | undefined;
     };
     travelers: {
         [key in TravelerType]: number;
@@ -56,16 +58,16 @@ const TRAVELERS = [
     { title: "Pets", sub: 'Are you traveling with a pet ?', key: 'pets' as TravelerType }
 ];
 
-const MONTHS_TO_DISPLAY = 15;
-
 function SearchBar() {
     const { flightSearchInfos, setFlightSearchInfos } = useFlightSearchStore();
-    
+    const navigate = useNavigate();
     // États locaux
     const [isVisible, setIsVisible] = useState(false);
     const [active, setActive] = useState<ActiveTab>();
     const [destination, setDestination] = useState('');
-    const [typeDate, setTypeDate] = useState<'dates' | 'flexible'>('dates');
+    const isMobile = useMediaQuery('(max-width: 640px)');
+    const isMobile2 = useMediaQuery('(min-width: 640px) and (max-width: 820px)');
+
     const [overlayDimensions, setOverlayDimensions] = useState({
         width: 0,
         height: 0,
@@ -85,21 +87,20 @@ function SearchBar() {
     const searchSpan = useRef<HTMLSpanElement>(null);
 
     // Destructuring des valeurs
-    const { dates, flexible, travelers } = flightSearchInfos;
+    const { dates, travelers } = flightSearchInfos;
     let startDate = dates?.startDate || null;
     let endDate = dates?.endDate || null;
-    let from = flexible?.from || [];
-    let forFlexible = flexible?.for;
+
+    const [opened, {open, close}] = useDisclosure(false)
 
     // Validation du formulaire
     const isValid = useMemo(() => {
         const hasDestination = destination.length > 0;
         const hasDates = startDate && endDate;
-        const hasFlexible = from.length > 0 && forFlexible;
         const hasTravelers = Object.values(travelers).some(count => count > 0);
         
-        return hasDestination && (hasDates || hasFlexible) && hasTravelers;
-    }, [destination, startDate, endDate, from, forFlexible, travelers]);
+        return hasDestination && hasDates && hasTravelers;
+    }, [destination, startDate, endDate, travelers]);
 
     // Handlers
     const handleDestinationChange = useCallback((value: string) => {
@@ -116,86 +117,88 @@ function SearchBar() {
         setFlightSearchInfos((prev) => ({
             ...prev,
             dates: { startDate: null, endDate: null },
-            flexible: { from: [], for: undefined }
         }));
     }, [setFlightSearchInfos]);
 
-    const toggleFlexibleMonth = useCallback((index: number) => {
-        setFlightSearchInfos((prev) => {
-            const currentFrom = prev.flexible?.from ?? [];
-            const nextFrom = currentFrom.includes(index)
-                ? currentFrom.filter(i => i !== index)
-                : [...currentFrom, index];
+    const {setLookingFlights, setFlightInfos, flightInfos} = useBookFlightStore();
+    const {notify} = useToasting();
 
-            return {
-                ...prev,
-                dates: { startDate: null, endDate: null },
-                flexible: {
-                    from: nextFrom,
-                    for: prev.flexible?.for,
-                },
-            };
-        });
-    }, [setFlightSearchInfos]);
+    const {refetch, isLoading} = useQuery({
+        queryKey: ['searchFlights'],
+        queryFn: async ()=>{
+            try {
+                const urlParams = new URLSearchParams();
+                if(destination) urlParams.append('toCountry', destination.trim());
+                if (travelers) urlParams.append('seatsLeft_gte', (travelers.adults + travelers.kids + travelers.babies + travelers.pets).toString());
+                const requestUrl = `flights?${urlParams.toString()}`;
+                const res = await apiFetch(requestUrl);
 
-    const setFlexibleDuration = useCallback((value: FlexibleDuration) => {
-        setFlightSearchInfos((prev) => ({
-            ...prev,
-            dates: { startDate: null, endDate: null },
-            flexible: {
-                from: prev.flexible?.from ?? [],
-                for: value,
+                if(res.success){
+                    setLookingFlights(Array.isArray(res.body) ? res.body : []);
+                    setFlightInfos({
+                        ...flightInfos,
+                        passengersCount: travelers.adults + travelers.kids + travelers.babies + travelers.pets
+                    });
+                    console.log(travelers)
+                }else{
+                    notify('Could not get any result', 'error');
+                }
+                return res
+            } catch (error) {
+                notify('Could not get any result', 'error');            
+                return error
             }
-        }));
-    }, [setFlightSearchInfos]);
+        },
+        enabled: false
+    }); 
 
-    const handleSubmit = useCallback((e: React.FormEvent) => {
+    const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         
         if (!isValid) return;
 
         const searchParams = {
             destination,
-            ...(startDate && endDate ? {
-                dates: {
-                    startDate: startDate.toISOString(),
-                    endDate: endDate.toISOString(),
-                }
-            } : {
-                flexible: {
-                    from,
-                    for: forFlexible,
-                }
-            }),
+            dates: {
+                startDate: startDate?.toISOString(),
+                endDate: endDate?.toISOString(),
+            },
             travelers,
         };
 
         console.log('Searching with params:', searchParams);
+
         // TODO: Appel API ou navigation
         
         // Fermeture après recherche
-        handleCloseOverlay();
-    }, [destination, startDate, endDate, from, forFlexible, travelers, isValid]);
+        await refetch();
+        navigate(routeMatcher.destinations);
 
-    // Fonctions d'affichage
-    const formatDateFromIndex = useCallback((index: number) => ({
-        month: dayjs().add(index, 'month').format('MMMM'),
-        year: dayjs().add(index, 'month').format('YYYY'),
-    }), []);
+        setFlightSearchInfos({
+            destination:undefined,
+            dates:{
+                startDate: null,
+                endDate: null
+            },
+            travelers:{
+                adults: 0,
+                kids: 0,
+                babies: 0,
+                pets: 0 
+            }
+        });
+
+
+
+        handleCloseOverlay();
+    }, [destination, startDate, endDate, travelers, isValid]);
+
 
     const formatDisplayDate = useCallback((date: DateValue) => {
         if (!date) return '';
         return dayjs(date).format('MMM DD YYYY');
     }, []);
 
-    const formatFlexibleDisplay = useCallback(() => {
-        if (!from.length || !forFlexible) return 'Flexible dates';
-        const sortedMonths = [...from].sort((a, b) => a - b);
-        const monthNames = sortedMonths.map(i => 
-            formatDateFromIndex(i).month.toLowerCase().slice(0, 3)
-        );
-        return `${forFlexible} in ${monthNames.join(', ')}`;
-    }, [from, forFlexible, formatDateFromIndex]);
 
     // Overlay management
     const handleCloseOverlay = useCallback(() => {
@@ -212,7 +215,7 @@ function SearchBar() {
         const { width, height, left } = li.getBoundingClientRect();
         const navbarParentRect = navbarParent.current.getBoundingClientRect();
 
-        navbar.current?.classList.add('bg-[#e2e2e254]');
+        if(!isMobile) navbar.current?.classList.add('bg-[#e2e2e254]');
 
         // Animation du bouton search
         if (searchSpan.current) {
@@ -229,7 +232,7 @@ function SearchBar() {
                     searchSpan.current?.classList.add('hidden');
                     searchSpan.current?.setAttribute('data-open', 'closed');
                 };
-            } else if (id === 'l3') {
+            } else if (id === 'l3' && !isMobile2) {
                 searchSpan.current.classList.remove('hidden');
                 searchSpan.current.setAttribute('data-open', 'opened');
             }
@@ -243,11 +246,11 @@ function SearchBar() {
             display: 'block'
         });
         setContentNeedles({
-            width: allContents[id].contentWidth,
-            left: id === 'l3' ? '50%' : 0,
+            width: `${allContents[id].contentWidth}%`,
+            left: id === 'l3' && !isMobile ? `${(100 - Number(allContents[id].contentWidth))}%` : 0,
             children: allContents[id].node
         });
-    }, [typeDate, active, flightSearchInfos]);
+    }, [active, flightSearchInfos, isMobile2]);
 
     const getContents = useCallback((): Record<Exclude<ActiveTab, undefined>, {
         node: React.ReactNode;
@@ -256,8 +259,9 @@ function SearchBar() {
         l1: {
             node: (
                 <div className="h-100 pt-3 px-8 overflow-scroll">
-                    <div>
+                    <div className="flex items-center justify-between w-full">
                         <small className="font-bold text-[0.9rem]">Destinations suggested</small>
+                        <button onClick={handleCloseOverlay} className="p-3 rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200 duration-200 md:hidden"><X width={15} height={15}/></button>
                     </div>
                     <div className="mt-4 grid gap-2 overflow-y-auto pr-2">
                         {DESTINATIONS.map((item, index) => (
@@ -285,91 +289,26 @@ function SearchBar() {
                     </div>
                 </div>
             ),
-            contentWidth: "50%"
+            contentWidth: isMobile2 ? 65 : 50
         },
         l2: {
             node: (
                 <div className="px-10 py-3">
                     <div className="m-auto w-full">
-                        <div className="my-5 w-[40%] mx-auto grid grid-cols-2 gap-2 rounded-full p-1 bg-[#ebebeb] font-medium">
-                            <button
-                                onClick={() => setTypeDate('dates')}
-                                aria-selected={typeDate === 'dates'}
-                                className={clsx(
-                                    'rounded-full py-2 px-4 transition-all',
-                                    typeDate === 'dates' ? 'bg-white shadow-md' : 'hover:bg-neutral-300'
-                                )}
-                            >
-                                Dates
-                            </button>
-                            <button
-                                onClick={() => setTypeDate('flexible')}
-                                aria-selected={typeDate === 'flexible'}
-                                className={clsx(
-                                    'rounded-full py-2 px-4 transition-all',
-                                    typeDate === 'flexible' ? 'bg-white shadow-md' : 'hover:bg-neutral-300'
-                                )}
-                            >
-                                Flexible
-                            </button>
-                        </div>
-
+                        <button onClick={handleCloseOverlay} className="p-3 rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200 duration-200 absolute top-9 right-7 md:hidden"><X width={15} height={15}/></button>
                         <div>
-                            {typeDate === 'dates' ? (
-                                <DateRangePicker />
-                            ) : (
-                                <div className='text-center'>
-                                    <h2 className='font-semibold p-3 text-xl mt-10'>How long will your stay be?</h2>
-                                    <ul className='flex gap-6 w-max m-auto mb-7 mt-4'>
-                                        {(['A week-end', 'A week', 'A month'] as FlexibleDuration[]).map((duration) => (
-                                            <button
-                                                key={duration}
-                                                onClick={() => setFlexibleDuration(duration)}
-                                                className={clsx(
-                                                    'rounded-full scale-110 border cursor-pointer p-2 px-4 hover:border-black transition-all',
-                                                    forFlexible === duration ? 'border-black border-2' : 'border-gray-300'
-                                                )}
-                                            >
-                                                {duration}
-                                            </button>
-                                        ))}
-                                    </ul>
-
-                                    <h2 className='font-semibold p-3 text-xl mt-10'>When will you leave?</h2>
-                                    <ul className='flex gap-3 overflow-y-scroll w-full scrollbar-none mb-7 mt-2'>
-                                        {Array.from({ length: MONTHS_TO_DISPLAY }, (_, index) => (
-                                            <button
-                                                key={`month-${index}`}
-                                                onClick={() => toggleFlexibleMonth(index)}
-                                                className={clsx(
-                                                    'rounded-xl border py-5 px-7 min-w-1/5 hover:border-black transition-all',
-                                                    from.includes(index) ? 'bg-gray-100 border-black border-2' : 'border-gray-300'
-                                                )}
-                                            >
-                                                {from.includes(index) ? (
-                                                    <CalendarFold stroke="black" strokeWidth={2} className='w-10 h-10 m-auto mb-3' />
-                                                ) : (
-                                                    <Calendar stroke='gray' strokeWidth={1.5} className='w-10 h-10 m-auto mb-3' />
-                                                )}
-                                                <p className='text-sm'>
-                                                    <span className='font-semibold text-[1rem]'>{formatDateFromIndex(index).month}</span>
-                                                    <br />
-                                                    {formatDateFromIndex(index).year}
-                                                </p>
-                                            </button>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
+                            <DateRangePicker />
                         </div>
                     </div>
                 </div>
             ),
-            contentWidth: "100%"
+            contentWidth: 100
         },
         l3: {
             node: (
                 <div className="px-10">
+                    <small onClick={handleCloseOverlay} className="px-5 py-1 rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200 duration-200 flex justify-self-center my-2 md:hidden">Cancel</small>
+
                     {TRAVELERS.map(({ title, sub, key }, index) => (
                         <div key={key}>
                             <div className='flex justify-between items-center'>
@@ -384,21 +323,18 @@ function SearchBar() {
                     ))}
                 </div>
             ),
-            contentWidth: "50%"
+            contentWidth: isMobile2 ? 65 : 50 
         }
-    }), [active, flightSearchInfos, typeDate]);
+    }), [active, flightSearchInfos, isMobile2]);
 
     // Effets
     useEffect(() => {
         if (active) {
             overlayActive(active);
         }
-
         startDate = flightSearchInfos.dates?.startDate || null;
         endDate = flightSearchInfos.dates?.endDate || null;
-        from = flightSearchInfos.flexible?.from || [];
-        forFlexible = flightSearchInfos.flexible?.for || undefined;
-    }, [active, flightSearchInfos, typeDate]);
+    }, [active, flightSearchInfos]);
 
     useEffect(() => {
         if (active) {
@@ -416,49 +352,55 @@ function SearchBar() {
     // Rendu
     return (
         <ClickAwayListener onClickAway={handleCloseOverlay}>
-            <div className="w-max m-auto relative">
-                <div ref={navbarParent} className='bg-white max-w-max relative m-auto shadow-gray-400 shadow-xs mt-5 rounded-full border-gray-200 border text-[0.9rem] min-w-max'>
+            <div className="relative mx-auto w-full max-w-[900px]">
+                <div ref={navbarParent} className='relative mx-auto mt-5 w-full min-w-0 rounded-2xl border border-gray-200 bg-white text-[0.9rem] shadow-gray-400 shadow-xs sm:rounded-full'>
                     <form onSubmit={handleSubmit}>
                         <TabGroup>
-                            <TabList ref={navbar} className='relative grid grid-cols-3 justify-between cursor-pointer items-center rounded-full transition-all text-[1rem]'>
+                            <TabList ref={navbar} className='relative grid grid-cols-1 items-center rounded-2xl pb-14 text-[1rem] transition-all sm:grid-cols-3 sm:rounded-full sm:pb-0'>
                                 {/* Tab 1: Destination */}
                                 <Tab
                                     id="l1"
-                                    className='cursor-pointer outline-none rounded-full w-full min-w-max'
+                                    className='w-full min-w-0 cursor-pointer rounded-full outline-none'
                                     onClick={() => setActive('l1')}
                                 >
                                     {({ hover }) => (
                                         <div className={clsx(
-                                            'py-3 rounded-full px-7 w-full text-left onglet cursor-pointer flex items-center pr-2 relative',
-                                            hover && 'bg-(--sb-gray-hover)'
+                                            'onglet relative flex w-full cursor-pointer items-center sm:rounded-full px-4 py-4 sm:py-3 pr-2 text-left sm:px-7 max-w-full rounded-t-2xl',
+                                            hover && 'bg-(--sb-gray-hover)', active === 'l1' && 'bg-(--sb-gray-hover)'
                                         )}>
-                                            <label htmlFor="destination" className="block cursor-pointer w-full">
+                                            <label htmlFor="destination" className=" cursor-pointer w-full flex items-center justify-between sm:block">
                                                 <span className='relative z-3 text-sm font-semibold'>Destination</span>
-                                                <input
-                                                    className={clsx(
-                                                        'outline-none w-full pr-2 relative z-3 bg-transparent',
-                                                        destination && 'font-semibold'
-                                                    )}
-                                                    type="text"
-                                                    name="destination"
-                                                    id="destination"
-                                                    placeholder='Look for a destination'
-                                                    value={destination}
-                                                    onInput={(e) => handleDestinationChange(e.currentTarget.value)}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setActive("l1");
-                                                    }}
-                                                />
-                                            </label>
-                                            {destination && active === 'l1' && (
-                                                <div 
-                                                    className="absolute z-3 right-2 rounded-full p-2 hover:bg-gray-100 duration-200 cursor-pointer"
-                                                    onClick={handleClearDestination}
-                                                >
-                                                    <X width={15} height={15} />
+                                                
+                                                <div className="flex items-center gap-2 max-w-[60%] sm:max-w-none">
+                                                    <input
+                                                        className={clsx(
+                                                            'outline-none w-max text-right sm:text-left sm:w-full relative z-3 bg-transparent cursor-pointer',
+                                                            destination && 'font-semibold'
+                                                        )}
+                                                        type="text"
+                                                        name="destination"
+                                                        id="destination"
+                                                        placeholder='Look for a destination'
+                                                        value={destination}
+                                                        onInput={(e) => handleDestinationChange(e.currentTarget.value)}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setActive("l1");
+                                                        }}
+                                                    />
+                                                    <div
+                                                        className={clsx(
+                                                            'clear-destination sm:absolute sm:top-[30%] z-3 right-2 sm:hover:bg-gray-100 rounded-full hover:bg-white p-[4px]',
+                                                            destination && active === 'l1' && 'clear-destination-visible'
+                                                        )}
+                                                        aria-hidden={!destination || active !== 'l1'}
+                                                        onClick={destination && active === 'l1' ? handleClearDestination : undefined}
+                                                    >
+                                                        <X width={15} height={15} />
+                                                    </div>
                                                 </div>
-                                            )}
+                                            </label>
+                                            
                                         </div>
                                     )}
                                 </Tab>
@@ -466,54 +408,48 @@ function SearchBar() {
                                 {/* Tab 2: Dates */}
                                 <Tab
                                     id="l2"
-                                    className='cursor-pointer outline-none rounded-full min-w-max text-left w-full'
+                                    className='w-full min-w-0 cursor-pointer rounded-full text-left outline-none'
                                     onClick={() => setActive("l2")}
                                 >
                                     {({ hover }) => (
                                         <div className={clsx(
-                                            'py-3 relative rounded-full items-center justify-between onglet min-w-full',
+                                            'onglet relative min-w-full sm:rounded-full sm:items-center sm:justify-between sm:py-3',
                                             hover && 'bg-(--sb-gray-hover)',
-                                            (startDate || endDate || forFlexible || from.length > 0) && 'flex'
+                                            (startDate || endDate) && 'flex', active === 'l2' && 'bg-(--sb-gray-hover)'
                                         )}>
                                             <div className={clsx(
-                                                'relative z-3 border-x-2 border-x-gray-200 px-8 w-full',
+                                                'relative z-3 w-full border-y-2 border-gray-200 px-4 pr-2 sm:border-x-2 sm:py-0 py-4 sm:border-y-0 sm:px-8',
                                                 (hover || active) && 'border-x-transparent'
                                             )}>
-                                                {typeDate === 'dates' ? (
-                                                    <div>
+                                                {
+                                                    <div className="flex items-center justify-between gap-2 sm:block">
                                                         <small className='text-sm font-semibold'>Dates</small>
                                                         {(!startDate && !endDate) ? (
-                                                            <p className="text-gray-400">When ?</p>
+                                                            <p className="text-gray-400 pr-2">When ?</p>
                                                         ) : (
-                                                            <p className="font-semibold truncate max-w-[200px]">
-                                                                {startDate && formatDisplayDate(startDate)}
-                                                                {startDate && endDate && ' - '}
-                                                                {endDate && formatDisplayDate(endDate)}
-                                                            </p>
+                                                            <div className="flex items-center gap-2">
+                                                                <p className="font-normal truncate max-w-50 ">
+                                                                    {startDate && formatDisplayDate(startDate)}
+                                                                    {startDate && endDate && ' - '}
+                                                                    {endDate && formatDisplayDate(endDate)}
+                                                                </p>
+                                                            <div 
+                                                                className={clsx(
+                                                            'clear-destination z-3 right-1 rounded-full sm:hover:bg-gray-100 hover:bg-white sm:absolute sm:top-[20%] p-[2px]',
+                                                            (startDate || endDate) && active === 'l2' && 'clear-destination-visible'
+                                                        )}
+                                                            onClick={handleClearAll}
+                                                        >
+                                                             <X width={15} height={15} />
+                                                        </div>
+                                                        
+                                                        </div>
                                                         )}
                                                     </div>
-                                                ) : (
-                                                    <div>
-                                                        <small className='text-sm font-semibold'>When ?</small>
-                                                        {(!from.length || !forFlexible) ? (
-                                                            <p className="text-gray-400">Flexible dates</p>
-                                                        ) : (
-                                                            <p className="line-clamp-1 max-w-55 font-semibold">
-                                                                {formatFlexibleDisplay()}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                )}
+                                                 }
                                             </div>
 
-                                            {(startDate || endDate || forFlexible || from.length > 0) && active === 'l2' && (
-                                                <div 
-                                                    className="absolute z-50 right-2 rounded-full p-2 hover:bg-gray-100 duration-200 cursor-pointer"
-                                                    onClick={handleClearAll}
-                                                >
-                                                    <X width={15} height={15} />
-                                                </div>
-                                            )}
+                                            
                                         </div>
                                     )}
                                 </Tab>
@@ -521,17 +457,17 @@ function SearchBar() {
                                 {/* Tab 3: Travelers */}
                                 <Tab
                                     id="l3"
-                                    className='cursor-pointer outline-none rounded-full w-full min-w-max'
+                                    className='w-full min-w-0 cursor-pointer rounded-full outline-none'
                                     onClick={() => setActive("l3")}
                                 >
                                     {({ hover }) => (
                                         <div className={clsx(
-                                            'py-3 rounded-full px-7 w-full text-left onglet',
-                                            hover && 'bg-(--sb-gray-hover)'
+                                            'onglet w-full sm:rounded-full px-4 py-4 sm:py-3 text-left sm:px-7 flex items-center justify-between sm:block mb-2 sm:mb-0',
+                                            hover && 'bg-(--sb-gray-hover)', active === 'l3' && 'bg-(--sb-gray-hover)'
                                         )}>
                                             <small className='relative z-3 text-sm font-semibold'>Travelers</small>
                                             {travelers.adults > 0 ? (
-                                                <p className='font-semibold relative z-3 truncate max-w-[150px]'>
+                                                <p className='font-semibold relative z-3 truncate max-w-37.5'>
                                                     {travelers.adults} adult{travelers.adults > 1 ? 's' : ''}
                                                     {travelers.kids > 0 && `, ${travelers.kids} kid${travelers.kids > 1 ? 's' : ''}`}
                                                     {travelers.babies > 0 && `, ${travelers.babies} bab${travelers.babies > 1 ? 'ies' : 'y'}`}
@@ -547,27 +483,36 @@ function SearchBar() {
                                 {/* Search Button */}
                                 <button 
                                     disabled={!isValid} 
-                                    type='submit' 
-                                    className='transition-all flex items-center cursor-pointer absolute z-4 right-2 bg-linear-to-r from-(--sb-blue-200) to-100% to-(--sb-blue-300) p-3 rounded-full disabled:opacity-50 disabled:cursor-not-allowed'
-                                >
-                                    <Search width={24} height={24} stroke='white' strokeWidth={3} />
-                                    <span 
-                                        ref={searchSpan} 
-                                        className='elongation max-w-max text-white font-bold w-max pl-1 hidden'
-                                        data-open="closed"
-                                    >
-                                        Search
-                                    </span>
+                                    type='submit'
+                                    className={clsx("absolute bottom-2 right-2 z-4 cursor-pointer rounded-full bg-linear-to-r from-(--sb-blue-200) to-100% to-(--sb-blue-300) p-3 transition-all disabled:cursor-not-allowed disabled:opacity-50 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 sm:mt-0 block",)}
+                                >   
+                                    {
+                                        isLoading ? (
+                                            <div className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
+                                        ) : 
+                                        <div
+                                            className='flex items-center'
+                                        >
+                                            <Search width={24} height={24} stroke='white' strokeWidth={3} />
+                                            <span 
+                                                ref={searchSpan} 
+                                                className='elongation max-w-max text-white font-bold w-max pl-1 hidden'
+                                                data-open="closed"
+                                            >
+                                                Search
+                                            </span>
+                                        </div>
+                                    }
                                 </button>
                             </TabList>
                         </TabGroup>
                     </form>
 
                     {/* Overlay */}
-                    {overlayDimensions && (
+                    {overlayDimensions && !isMobile && (
                         <div 
                             ref={overlay} 
-                            className="cursor-pointer rounded-full bg-white absolute z-0 transition-all pointer-events-none duration-300 shadow-[3px_0_5px_rgba(87,87,87,0.3),-3px_0_20px_rgba(87,87,87,0.3)] top-0" 
+                            className={clsx("cursor-pointer sm:rounded-full bg-white absolute z-0 transition-all pointer-events-none duration-300 shadow-[3px_0_5px_rgba(87,87,87,0.3),-3px_0_20px_rgba(87,87,87,0.3)] top-0", active === 'l1' && 'rounded-t-2xl' )}
                             style={overlayDimensions}
                         />
                     )}
@@ -586,7 +531,9 @@ function SearchBar() {
                             <Content 
                                 contentProps={{
                                     ...contentNeedles,
-                                    style: { ...styles, position: 'absolute' },
+                                    width: isMobile ? '100%' : contentNeedles.width,
+                                    left: contentNeedles.left,
+                                    style: { ...styles, position: 'absolute'},
                                     setContent: setContentNeedles,
                                     display: contentNeedles.children ? "block" : "none",
                                     setOverlay: setOverlayDimensions,
@@ -598,6 +545,13 @@ function SearchBar() {
                         )}
                     </Transition>
                 )}
+
+            <Modal opened={opened} onClose={()=>{
+                close();
+            }} title={'Flights found'} centered>
+                <p>Japon</p>
+            </Modal>
+
             </div>
         </ClickAwayListener>
     );

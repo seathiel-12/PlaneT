@@ -18,11 +18,13 @@ function AuthLayout() {
             <p className='text-md py-2 text-gray-500'>Sign in to manage your bookings and saved destinations</p>
         </div>
         
-        <div className='w-[30%] m-auto mb-20'>
+        <div className='w-[80%] sm:w-[70%] md:w-[60%] lg:w-[40%] xl:w-[35%] m-auto mb-20'>
             <Tabs options={['Sign In', 'Create Account']} onclick={(e)=> {
                 navigator((e.currentTarget.id  === 'Sign In' ? '/sign-in' : '/create-account'))
                 }} current={pathname.includes('sign-in') ? 'Sign In' : 'Create Account'} />
-             <Outlet/>
+                 <div key={pathname} className='auth-form-transition'>
+                     <Outlet/>
+                 </div>
         </div>
         
 

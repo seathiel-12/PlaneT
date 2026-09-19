@@ -15,10 +15,6 @@ export const useFlightSearchStore = create<FlightSearchStoreProps>((set)=>({
             startDate: null,
             endDate: null
         },
-        flexible: {
-            from: [],
-            for: undefined
-        },
         travelers:{
             adults: 0,
             kids: 0,
