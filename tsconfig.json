@@ -8,5 +8,4 @@
     "allowJs":true,
     "jsx":"react-jsx",
   },
-  "include": ["**/**/*"],
 }
