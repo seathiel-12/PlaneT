@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronRight, Luggage } from 'lucide-react'
-import { useEffect, useState, type FC } from 'react';
+import { useEffect, useState } from 'react';
 import Card from '../../../../Utils/Components/Card/Card';
 
 import { useStepperContext } from '../../../Pages/BookFlight';
@@ -287,13 +287,13 @@ export const PassengerSetting = ({form}: PassengerSettingsFormProps) => {
                 </label>
             </Card>
 
-            <PriceFlight isValid={form.formState.isValid} />
+            <PriceFlight />
         </div>
         
     )
 }
 
-const PriceFlight: FC<{isValid: boolean}> = ({isValid})=>{
+const PriceFlight = ()=>{
     const {setActiveStep} = useStepperContext();
     const {price, flightInfos: {passengersCount}, passengersInfos} = useBookFlightStore();
 

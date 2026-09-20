@@ -1,17 +1,10 @@
 import { Plane } from 'lucide-react'
 import SearchBar from '../../../Utils/Components/SearchBar/SearchBar';
 import SplitText from '../../../Utils/Components/SplitText/SplitText';
-import Counter from '../../../Utils/Components/Counter/Counter';
 import { useLanguage } from '../../../contexts/LanguageContext';
 
 function Hero() {
     const { t } = useLanguage();
-    const stats = {
-        travelers: { value: 1000000, atEndValue: '1M', suffix: '+', label: 'travelers' },
-        destinations: { value: 200,  atEndValue: '200', suffix: '+', label: 'destinations' },
-        airlines: { value: 70, atEndValue: '70', suffix: '+', label: 'airlines' },
-        support: { value: 24, atEndValue: '24', suffix: '/7', label: 'support' },
-    }
   return (
     
     <div className="bg-[linear-gradient(to_bottom,_rgb(225,244,251)_10%,_var(--color-gray-50)_95%)]">
@@ -60,17 +53,6 @@ function Hero() {
 
         </div>
             
-
-    {/* <div className='flex justify-center gap-25 pb-20 relative z-1'>
-        { Object.entries(stats).map(([key, { value, atEndValue, suffix, label }]) => (
-            <div key={key} className='text-center'>
-                <h2 className='text-5xl font-bold text-(--sb-blue-250)'>
-                    <Counter atEndValue={atEndValue} end={value} suffix={suffix} duration={1.5} />
-                </h2>
-                <p className='text-gray-600 capitalize mt-2'>{label}</p>
-            </div>
-        )) }
-    </div> */}
     </div>
   )
 }

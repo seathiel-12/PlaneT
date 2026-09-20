@@ -19,7 +19,6 @@ const currency = '$';
 const PopularDestinations = () => {
     const cardsRef = useRef<HTMLDivElement | null>(null)
     const [popularFlights, setPopularFlights] = useState<Flight[]>([]);
-    const {setLookingFlights} = useBookFlightStore();
     const {notify} = useToasting();
     const {isLoading} = useQuery({queryKey: ['popularDestinations'], queryFn: async ()=>{
         try{

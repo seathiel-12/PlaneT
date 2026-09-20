@@ -91,7 +91,7 @@ function SearchBar() {
     let startDate = dates?.startDate || null;
     let endDate = dates?.endDate || null;
 
-    const [opened, {open, close}] = useDisclosure(false)
+    const [opened, {close}] = useDisclosure(false)
 
     // Validation du formulaire
     const isValid = useMemo(() => {

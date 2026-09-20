@@ -1,9 +1,8 @@
-import { Badge, HoverCard, Menu, Rating, Select, ThemeIcon } from "@mantine/core";
+import { Badge, HoverCard, Menu, Rating, ThemeIcon } from "@mantine/core";
 import { ArrowRight, Clock, HeartIcon, MapPin } from "lucide-react";
 import { useState, type FC } from "react";
 import Button from "../../../Utils/Components/Button/Button";
 import type { Flight } from "../../../types";
-import { formatDuration } from "../../../Utils/Functions/formatDuration";
 import { useNavigate } from "react-router-dom";
 import { useBookFlightStore } from "../BookFlight/store";
 import { routeMatcher } from "../../router";

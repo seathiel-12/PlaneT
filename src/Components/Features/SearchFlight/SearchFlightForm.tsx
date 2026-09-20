@@ -57,7 +57,7 @@ const SearchFlightForm: FC<{
         enabled: false
     });
 
-    const onSubmit = (data:SearchFlightProps)=> {
+    const onSubmit = ()=> {
         if(!lookingFlights.length){
             setIsLoading(true);
             refetch();
