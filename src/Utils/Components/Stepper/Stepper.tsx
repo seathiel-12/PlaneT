@@ -22,7 +22,6 @@ export type stepperProps = {
 }
 const LinearStepper: React.FC<stepperProps> = ( {steps} ) => {
   const {activeStep, setActiveStep, levelSlider, setLevelSlider} = useStepperContext();
-  const [skipped, setSkipped] = React.useState(new Set<number>());
   const [previousStep, setPreviousStep] = React.useState(0);
   const sliderIncrease = 100 / steps.length;
 
@@ -37,24 +36,10 @@ const LinearStepper: React.FC<stepperProps> = ( {steps} ) => {
     return step === -1;
   };
 
-  const isStepSkipped = (step: number) => {
-    return skipped.has(step);
-  };
-
-  const handleNext = () => {
-    setLevelSlider((level) => level + (100 / steps.length));
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     setLevelSlider((level) => level - (100 / steps.length));
     setPreviousStep((prev)=> prev - 1)
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-    setLevelSlider(0);
   };
  
 
@@ -76,9 +61,6 @@ const LinearStepper: React.FC<stepperProps> = ( {steps} ) => {
                 labelProps.optional = (
                   <Typography variant="caption">Optional</Typography>
                 );
-              }
-              if (isStepSkipped(index)) {
-                stepProps.completed = false;
               }
               return (
                 <Step key={label} {...stepProps} >
