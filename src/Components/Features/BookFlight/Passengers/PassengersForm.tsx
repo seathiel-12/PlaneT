@@ -19,11 +19,8 @@ const PassengersForm = () => {
       },
     });
 
-    const onsubmit = (data:PassengerFormProps)=> {
-      console.log(data);
-    }
   return (
-    <form onSubmit={form.handleSubmit(onsubmit)} className='rounded-2xl p-4 sm:p-6 md:p-10 border-[0.5px] border-gray-300 shadow-xs bg-white my-6 sm:my-10'>
+    <form className='rounded-2xl p-4 sm:p-6 md:p-10 border-[0.5px] border-gray-300 shadow-xs bg-white my-6 sm:my-10'>
       <div className='flex items-start gap-2'><User className='mt-1 shrink-0' stroke='var(--sb-blue-250)' /> <h1 className='playfair-display text-xl sm:text-2xl'>Passengers Informations</h1></div>
         <div>
             { Array.from({length: passengersCount}, (_, index) => <PassengerInfosForm key={index} form={form} num={index + 1} />) }

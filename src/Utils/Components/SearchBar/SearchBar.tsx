@@ -139,7 +139,6 @@ function SearchBar() {
                         ...flightInfos,
                         passengersCount: travelers.adults + travelers.kids + travelers.babies + travelers.pets
                     });
-                    console.log(travelers)
                 }else{
                     notify('Could not get any result', 'error');
                 }
@@ -156,17 +155,6 @@ function SearchBar() {
         e.preventDefault();
         
         if (!isValid) return;
-
-        const searchParams = {
-            destination,
-            dates: {
-                startDate: startDate?.toISOString(),
-                endDate: endDate?.toISOString(),
-            },
-            travelers,
-        };
-
-        console.log('Searching with params:', searchParams);
 
         // TODO: Appel API ou navigation
         

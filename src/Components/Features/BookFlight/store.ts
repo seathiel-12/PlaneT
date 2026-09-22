@@ -39,7 +39,7 @@ const defaultBookingState = {
     travelTo: '',
     departureDate: '',
     returnDate: '',
-    passengersCount: 1
+    passengersCount: 0
   },
   flightSelected: undefined,
   passengersInfos: [createPassenger(1)],

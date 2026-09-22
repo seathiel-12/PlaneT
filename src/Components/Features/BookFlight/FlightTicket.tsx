@@ -5,6 +5,7 @@ import Button from '../../../Utils/Components/Button/Button';
 import { Menu } from '@mantine/core';
 import { useBookFlightStore } from './store';
 import type { Flight } from '../../../types';
+import { clsx } from 'clsx';
 
 type FlightTicketType = {
     variant:'primary' | 'secondary',
@@ -18,7 +19,7 @@ export const FlightTicket:FC<FlightTicketType> = ({flight, variant='primary', on
     if(variant === 'primary')
         return (
             <div className='card-reveal mx-auto w-full rounded-2xl '>        
-                <div className='ticket-primary-body flex max-w-full flex-col gap-6 rounded-2xl border-[0.5px] border-gray-300 bg-white px-4 py-6 sm:px-6 sm:py-8 lg:flex-row lg:items-center lg:justify-around lg:gap-5 lg:px-10 lg:py-10'> 
+                <div className='ticket-primary-bodyrespo flex max-w-full flex-col gap-6 rounded-2xl border-[0.5px] border-gray-300 bg-white px-4 py-6 sm:px-6 sm:py-8 lg:flex-row lg:items-center lg:justify-around lg:gap-5 lg:px-10 lg:py-10'> 
                     <div className='ticket-airline flex min-w-0 items-center gap-3'>
                         <div className='rounded-full p-3 bg-[#134cdd13]'><Plane stroke='var(--sb-blue-250)'/></div>
                         <div className=''>
@@ -26,23 +27,24 @@ export const FlightTicket:FC<FlightTicketType> = ({flight, variant='primary', on
                             <ClassTravel classTravel={classTravel} size="md" />
                         </div>
                     </div>
+                    <div className="sm:grid grid-cols-[70%_1fr] gap-[10%] lg:flex lg:justify-between lg:gap-30">
+                        <FromToDetails {...flight} />
 
-                    <FromToDetails {...flight} />
-
-                    <PricePerSeat variant="primary" onSelect={onSelect} flight={flight} />
+                        <PricePerSeat variant="primary" onSelect={onSelect} flight={flight} />  
+                    </div>
                 </div> 
             </div>
         )
     if(variant === 'secondary')
         return (
-            <div className="card-reveal mx-auto w-full rounded-2xl border border-gray-200 bg-white px-4 py-6 shadow-lg sm:px-6 sm:py-8 lg:px-8 ">
-                <div className="ticket-secondary-body flex flex-col items-stretch gap-5 px-0 sm:flex-row sm:items-center sm:justify-between sm:px-2">
+            <div className="card-reveal mx-auto w-full rounded-2xl border border-gray-200 bg-white px-4 py-6 shadow-lg sm:px-6 sm:py-8 lg:px-5 xl:px-5 ">
+                <div className="ticket-secondary-body flex flex-col items-stretch gap-5 px-0 sm:flex-row sm:items-center sm:justify-between sm:px-2 w-full">
                     <FromToDetails {...flight}/> 
                     <PricePerSeat flight={flight} onSelect={onSelect} variant="secondary"/>
                 </div>
                 <hr className="border-gray-400 my-5 mx-auto" />
 
-                <div className="flex items-center justify-between gap-3 pr-0 sm:pr-3 mx-5 text-sm sm:text-md">
+                <div className="flex items-center justify-between gap-3 pr-0 mx-5 text-sm sm:text-md">
                     <div className="flex items-center gap-3">
                         <div className='rounded-full p-3 bg-[#134cdd13]'><Plane stroke='var(--sb-blue-250)'/></div>
                         <p className='text-md text-gray-500'>{company}</p>
@@ -58,7 +60,7 @@ export const FlightTicket:FC<FlightTicketType> = ({flight, variant='primary', on
 
 export const FromToDetails:React.FC<Flight> = ({departureAt, fromCountry, duration, typeFlight, landingAt, toCountry})=>{
     return (
-        <div className='ticket-route grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(80px,1.15fr)_minmax(0,1fr)] items-center gap-2 text-center sm:gap-3'>
+        <div className='ticket-route grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(80px,1.15fr)_minmax(0,1fr)] items-center gap-2 text-center sm:gap-3 w-full sm:max-w-[80%]'>
                 <div className='ticket-route-leg min-w-0 overflow-hidden'>
                     <h2 className='font-bold text-2xl lg:text-xl xl:text-2xl'>{formatNumber(new Date(departureAt).getHours()) + ':' + formatNumber(new Date(departureAt).getMinutes()) }</h2>
                         <p className='break-words'><span className='flex flex-row justify-center font-bold'>{fromCountry.split(' ')[1]}</span> <span className='text-gray-400 text-[14px]'>{fromCountry.split(' ')[0]}</span></p>
@@ -70,10 +72,10 @@ export const FromToDetails:React.FC<Flight> = ({departureAt, fromCountry, durati
                         <span className='text-[13px] text-gray-500'>{duration}</span>
                     </p> 
                     
-                    <div className='flex items-center gap-2'>
-                        <hr className='border-[0.5px] border-gray-300 w-full sm:w-15'/>
+                    <div className='flex items-center gap-2 w-full'>
+                        <hr className='border-[0.5px] border-gray-300 w-full lg:w-15'/>
                         <div><Plane width={20} stroke='var(--sb-blue-250)'/></div>
-                        <hr className='border-[0.5px] border-gray-300 w-full sm:w-15'/>
+                        <hr className='border-[0.5px] border-gray-300 w-full lg:w-15'/>
                     </div>
                      
                     <p className='text-[13px] text-gray-400'>{typeFlight}</p>
@@ -91,7 +93,7 @@ export const FromToDetails:React.FC<Flight> = ({departureAt, fromCountry, durati
 export const PricePerSeat:React.FC<FlightTicketType> = ({flight, onSelect, variant})=> {
     const {setFlightInfos} = useBookFlightStore();
     return (
-    <div className='ticket-price min-w-0 border-t-[0.5px] border-t-gray-300 pt-5 text-left flex items-center justify-between px-5 sm:block sm:min-w-max sm:border-l-[0.5px] sm:border-t-0 sm:border-l-gray-300 sm:pl-5 sm:pt-0 sm:text-right md:pl-10 lg:pl-5 '>
+    <div className={clsx('ticket-price min-w-0 border-t-[0.5px] border-t-gray-300 pt-5 text-left flex items-center justify-between px-5 sm:block sm:min-w-max sm:border-l-[0.5px] sm:border-t-0 sm:border-l-gray-300 sm:pl-5 sm:pt-0 sm:text-right md:pl-10 md:pr-0 lg:pl-5', variant === 'primary' ? 'mt-5' : 'sm:pr-0')}>
             <div className="w-max sm:ml-auto">
                 <p className='text-[14px] text-gray-500'>Per person</p>
                 <p className='text-3xl text-(--sb-blue-250) font-bold'>{`$${flight.price}`}</p>
@@ -100,7 +102,7 @@ export const PricePerSeat:React.FC<FlightTicketType> = ({flight, onSelect, varia
                     <span>{flight.seatsLeft} seats left</span>
                 </div>
             </div>
-            <div className='sm:mt-5 sm:mr-auto'>
+            <div className={clsx('sm:mt-5 sm:mr-auto')}>
                 {
                     variant === 'secondary' &&
                     <Menu shadow="md" closeOnItemClick={false} closeOnEscape={false}>

@@ -5,6 +5,7 @@ import { RegisterSchema, type RegisterProps } from './type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { routeMatcher } from '../../../router';
 
 function RegisterForm() {
   const {handleSubmit, control} = useForm<RegisterProps>({
@@ -14,7 +15,7 @@ function RegisterForm() {
   const navigate = useNavigate();
   const onSubmit = (data:RegisterProps)=>{
     signIn({ firstname: data.firstname, lastname: data.lastname, email: data.email });
-    navigate('/home');
+    navigate(routeMatcher.home);
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)} className=' m-auto rounded-2xl mt-5 bg-white shadow-lg p-8'>

@@ -142,7 +142,7 @@ const PassengerInfosForm: React.FC<PassengerInfosFormProps> = ({ num, form}) => 
                             render={({field, fieldState:{error}})=>
                             <TextInput 
                                 error={error?.message} 
-                                required 
+                                required
                                 value={field.value} 
                                 onChange={(e)=> {
                                     if(e)
@@ -247,7 +247,7 @@ export const PassengerSetting = ({form}: PassengerSettingsFormProps) => {
                                     </>}
                                 />
                                 <div className='w-full'>
-                                    <p className='font-semibold flex justify-between w-full'><span>{title}</span> <span className='text-(--sb-blue-250) font-medium'>{price === 0 ? 'Included' : `+${price}$/person`}</span></p>
+                                    <p className='font-semibold flex sm:flex-row md:flex-col lg:flex-row justify-between w-full'><span>{title}</span> <span className='text-(--sb-blue-250) font-medium'>{price === 0 ? 'Included' : `+${price}$/person`}</span></p>
                                     <p className=' text-gray-500'>{subtitle}</p>
                                </div>
                             </label>

@@ -50,7 +50,7 @@ const Destination = () => {
         <p data-reveal-text className='text-base sm:text-lg text-gray-500 w-full sm:w-[70%] m-auto'>From iconic cities to hidden gems, find your perfect travel destination from our curated collection of global locations.</p>
         </div>
 
-      <div className='w-full max-w-7xl lg:w-[80%] m-auto'>
+      <div className='w-full max-w-7xl lg:w-[90%] m-auto'>
             <div data-reveal-card>
               <SearchFlightForm
                 setFilter={setFilter}

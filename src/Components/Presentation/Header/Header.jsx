@@ -88,7 +88,7 @@ function Header() {
 
         <div className='hidden items-center gap-2 sm:gap-5 lg:flex'>
             {user ? <>
-                <Link to='/my-bookings' className='flex items-center gap-2 rounded-md px-3 py-1.25 text-sm hover:bg-white/70'><User width={17} height={17}/> {user.firstname}</Link>
+                <Link to='/my-bookings' className='hidden xl:flex items-center gap-2 rounded-md px-3 py-1.25 text-sm hover:bg-white/70'><User width={17} height={17}/> {user.firstname}</Link>
                 <button type='button' onClick={signOut} className='rounded-md p-2 text-gray-500 hover:bg-white/70' aria-label='Sign out'><LogOut width={17}/></button>
             </> : <Link to={'/sign-in'} className='flex items-center justify-center gap-2 rounded-md px-3 py-1.25 transition-all hover:bg-orange-400 hover:text-white'> <User width={17} height={17}/> {t('nav.signIn')}</Link>}
             <Link to={'/book-flight'} className='rounded-md bg-blue-500 px-3 py-1.25 text-white hover:opacity-90'>{t('nav.bookNow')}</Link>

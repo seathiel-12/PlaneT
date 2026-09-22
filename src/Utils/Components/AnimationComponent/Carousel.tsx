@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Image from "../Image/Image";
 
 interface CardMediaCarouselProps {
   images: string[];
@@ -39,9 +40,9 @@ export function Carousel({
               className="card-carousel__slide"
               key={`${image}-${index}`}
             >
-              <img
+              <Image
                 src={image}
-                alt=""
+                alt="image"
                 draggable={false}
               />
             </div>

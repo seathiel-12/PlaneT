@@ -44,11 +44,14 @@ const SearchFlightForm: FC<{
             }else{
                 notify('Could not load filtered flights.', 'error');
             }
+            return res;
         } catch (error) {
             notify('Could not load filtered flights.', 'error');
         }finally{
             setIsLoading(false);
-        }
+        }          
+        return false;
+
     }
 
     const {refetch} = useQuery({
@@ -66,7 +69,7 @@ const SearchFlightForm: FC<{
 
 
   return (
-    <form className="flex flex-col items-stretch gap-3 sm:gap-5 transition-all max-w-full duration-300" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col items-stretch gap-3 sm:gap-5 transition-all max-w-full duration-300 lg:flex-row lg:items-center" onSubmit={handleSubmit(onSubmit)}>
 
         <div className="grid grid-cols-1 md:grid-cols-[35%_1fr_25%] items-end gap-5 lg:gap-7 w-full m-auto transition-all duration-300"
         >

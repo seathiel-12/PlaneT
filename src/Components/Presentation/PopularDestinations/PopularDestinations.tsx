@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '../../../Utils/Functions/apiFetch';
 import { LoadingSkeleton } from '../../../Utils/Components/AnimationComponent/LoadingStates/LoadingSkeleton';
 import { useToasting } from '../../../Utils/Functions/useToasting';
+import Image from '../../../Utils/Components/Image/Image';
 
 const currency = '$';
 
@@ -123,11 +124,8 @@ const PreviewElement:FC<{card: Flight}> = ({ card }) => {
   
   return (
     <div className="w-full">
-      <div className="w-full h-70 bg-gray-300 rounded-t-lg mb-4 relative overflow-hidden">
-        <img onError={(img)=> {
-            img.currentTarget.onerror = null;
-                img.currentTarget.src='/assets/Images/no_images.jpg'
-                }} src={typeof card.imagePath === 'string' ? card.imagePath : card.imagePath[0]} alt={`${card.city} image`} className="w-full h-full bg-cover rounded-t-md hover:scale-110 duration-200"/>
+      <div className="w-full h-70 bg-gray-300 rounded-t-xl mb-4 relative overflow-hidden">
+        <Image src={typeof card.imagePath === 'string' ? card.imagePath : card.imagePath[0]} alt={`${card.city} image`} className="w-full h-full scale-101 bg-cover rounded-t-2xl hover:scale-110 duration-200"/>
         <Badge className="absolute bottom-3 left-5" size="lg" color="white" leftSection={<MapPin size={15} stroke="var(--sb-blue-250)" />}>
             <span className="text-gray-700 text-md">{card.toCountry}</span>
         </Badge>
@@ -169,7 +167,7 @@ const PreviewElement:FC<{card: Flight}> = ({ card }) => {
 // Composant pour l'élément détails
 const DetailsElement:FC<{card:Flight}> = ({ card }) => {
     const navigate = useNavigate();
-    const {flightInfos, setFlightInfos } = useBookFlightStore();
+    const {flightInfos, setFlightSelectedInfos, setFlightInfos } = useBookFlightStore();
 
   return (
       <div className="w-full">
@@ -217,8 +215,9 @@ const DetailsElement:FC<{card:Flight}> = ({ card }) => {
                             key={index}
                             onClick={(e)=>{
                                 if(e.currentTarget){
-                                    setFlightInfos({...flightInfos, travelTo: cities.find(elem => elem.includes(card.city)) ?? '', passengersCount: index+1});
-                                    navigate(routeMatcher.booking)
+                                            setFlightInfos({travelFrom: card.fromCountry, travelTo: card.toCountry, departureDate: card.departureAt, returnDate: card.landingAt, travelClass: card.classTravel, passengersCount: index + 1});
+                                    setFlightSelectedInfos(card);
+                                    navigate(`${routeMatcher.booking}?step=2`)
                                 } 
                             }}>{index+1} passenger(s)</Menu.Item>)
                         }

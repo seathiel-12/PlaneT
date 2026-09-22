@@ -14,29 +14,6 @@ const PaymentChecked = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    // useEffect(()=>{
-    //     setFlightSelectedInfos({
-    //         company: "Air France",
-    //         classTravel: "Economy",
-    //         fromCountry: "Paris, France",
-    //         continent: "America",
-    //         toCountry: "New York, USA",
-    //         departureAt: "2026-08-20T08:00:00Z",
-    //         landingAt: "2026-08-20T12:30:00Z",
-    //         duration: "4h30",
-    //         price: 450,
-    //         typeFlight: "Direct",
-    //         seatsLeft: 12,
-    //         city: "New York",
-    //         rating: 4.2,
-    //         ratingCount: 128,
-    //         description: "Vol direct confortable avec service à bord.",
-    //         caracteristics: ["Wifi", "Repas inclus", "Divertissement"],
-    //         isLiked: false,
-    //         isPopular: true,
-    //         imagePath: ["https://loremflickr.com/1280/720/new-york,usa"]
-    //     });
-    // },[]);
 
     useEffect(()=>{
         if(!flightSelected){
@@ -105,7 +82,7 @@ const PaymentChecked = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-5">
-                <Button onClick={() => navigate('/my-bookings')} className={'gap-2 rounded-xl py-2 px-5 sm:px-10 bg-(--sb-blue-250) text-white shadow-md hover:scale-95 duration-200'}>View my Booking →</Button>
+                <Button onClick={() => navigate(routeMatcher.myBookings)} className={'gap-2 rounded-xl py-2 px-5 sm:px-10 bg-(--sb-blue-250) text-white shadow-md hover:scale-95 duration-200'}>View my Booking →</Button>
                 <Button onClick={()=>{
                     navigate(routeMatcher.home);
                     reset();

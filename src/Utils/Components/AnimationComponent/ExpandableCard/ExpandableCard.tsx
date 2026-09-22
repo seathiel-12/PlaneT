@@ -12,6 +12,7 @@ import "./ExpandableCard.css";
 import { Carousel } from '../Carousel';
 import { useMediaQuery } from "@mantine/hooks";
 import { ScrollArea } from "@mantine/core";
+import Image from "../../Image/Image";
 
 gsap.registerPlugin(Flip);
 
@@ -175,7 +176,7 @@ export function ExpandableCard({
           ) : (
             <div className="expandable-card__preview">
               <div className="expandable-card__preview-image">
-                <img src={images?.[0] || ""} alt="" />
+                <Image src={images?.[0] || ""} alt="" className="rounded-t-xl" />
               </div>
 
               <div className="expandable-card__preview-content">

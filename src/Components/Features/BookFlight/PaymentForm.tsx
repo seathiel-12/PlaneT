@@ -26,23 +26,24 @@ const PaymentForm = () => {
                 <Controller
                     name='cardNumber'
                     control={control}
-                    render={({field, fieldState:{error}})=> <TextInput required className="my-3" leftSection={<CreditCard/>} type='number'  placeholder='1234 5678 9012 3456' label='Card Number' maxLength={16} {...field} error={error?.message ?? error?.root?.message} />}
+                    render={({field, fieldState:{error}})=> <TextInput onChange={field.onChange} required className="my-3" leftSection={<CreditCard/>} type='number'  placeholder='1234 5678 9012 3456' label='Card Number' maxLength={16} error={error?.message ?? error?.root?.message} />}
                 />
                 <Controller
                     name='cardholderName'
                     control={control}
-                    render={({field, fieldState:{error}})=> <TextInput required className="my-3" leftSection={<CreditCard/>} type='text'  placeholder='John Doe' label='Cardholder Name' {...field} error={error?.message ?? error?.root?.message} />}
+                    render={({field, fieldState:{error}})=> <TextInput onChange={field.onChange} required className="my-3" leftSection={<CreditCard/>} type='text'  placeholder='John Doe' label='Cardholder Name' error={error?.message ?? error?.root?.message} />}
                 />
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
                     <Controller
                         name='expiryDate'
                         control={control}
-                        render={({field, fieldState:{error}})=> <TextInput required className="my-3" type='date' placeholder='MM/YY' label='Expiry Date' {...field} error={error?.message ?? error?.root?.message} />}
+                        render={({field, fieldState:{error}})=> <TextInput onChange={field.onChange} required className="my-3" type='date' placeholder='MM/YY' label='Expiry Date' error={error?.message ?? error?.root?.message} />}
                     />
                     <Controller
                         name='cvv'
                         control={control}
-                        render={({field, fieldState:{error}})=> <TextInput className="my-3" required leftSection={<Lock/>} type='number' maxLength={3} placeholder='123' label='CVV' {...field} error={error?.message ?? error?.root?.message} />}
+                        render={({field, fieldState:{error}})=> <TextInput className="my-3" required leftSection={<Lock/>} type='number' maxLength={3} placeholder='123' label='CVV' 
+                        onChange={field.onChange} error={error?.message ?? error?.root?.message} />}
                     />
                 </div>
 
@@ -58,35 +59,11 @@ const PaymentForm = () => {
         }
     ];
 
-    const { price, flightSelected, setIsBooked, flightInfos: {passengersCount, travelClass}, passengersSetting: {luggage}, setFlightSelectedInfos } = useBookFlightStore();
+    const { price, flightSelected, setIsBooked, flightInfos: {passengersCount, travelClass}, passengersSetting: {luggage} } = useBookFlightStore();
     const { company = '', fromCountry = '', toCountry = '', departureAt = '', landingAt = '' } = flightSelected ?? {};
     const FEES = 50;
     const navigate = useNavigate();
     
-        useEffect(()=>{
-        setFlightSelectedInfos({
-            company: "Air France",
-            classTravel: "Economy",
-            fromCountry: "Paris, France",
-            continent: "America",
-            toCountry: "New York, USA",
-            departureAt: "2026-08-20T08:00:00Z",
-            landingAt: "2026-08-20T12:30:00Z",
-            duration: "4h30",
-            price: 450,
-            typeFlight: "Direct",
-            seatsLeft: 12,
-            city: "New York",
-            rating: 4.2,
-            ratingCount: 128,
-            description: "Vol direct confortable avec service à bord.",
-            caracteristics: ["Wifi", "Repas inclus", "Divertissement"],
-            isLiked: false,
-            isPopular: true,
-            imagePath: ["https://loremflickr.com/1280/720/new-york,usa"]
-        });
-    },[]);
-
 
   return (
     <form className='my-6 sm:my-10 flex flex-col lg:flex-row gap-5'>
@@ -98,8 +75,8 @@ const PaymentForm = () => {
                 </div>
 
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 my-3 w-full p-3 sm:p-5'>
-                    {paymentMethod.map(({title, subtitle, Icon})=> <label className='flex items-start sm:items-center gap-3 p-3 py-4 border border-(--sb-blue-250) bg-(--sb-blue-fade-4) rounded-2xl' htmlFor={title}>
-                        <input checked={paymentMethod[currentMethod].title === title} onClick={()=> setCurrentMethod(title === 'Credit Card' ? 0 : 1)} type="radio" name='payment' id={title} />
+                    {paymentMethod.map(({title, subtitle, Icon}, index)=> <label key={`${title}-${index}`} className='flex items-start sm:items-center gap-3 p-3 py-4 border border-(--sb-blue-250) bg-(--sb-blue-fade-4) rounded-2xl' htmlFor={title}>
+                        <input defaultChecked={paymentMethod[currentMethod].title === title} onClick={()=> setCurrentMethod(title === 'Credit Card' ? 0 : 1)} type="radio" name='payment' id={title} />
                         <Icon/>
                         <div>
                             <p className=''>{title}</p>
@@ -130,7 +107,6 @@ const PaymentForm = () => {
 
             <button type="submit" disabled={!isValid} onClick={(event)=>{
                 event.preventDefault();
-                console.log('Test')
                 setIsBooked(true);
                 navigate(routeMatcher.booked);
             }} className={'flex items-center justify-center gap-2 rounded-xl py-2 bg-(--sb-blue-250) text-white w-full my-5 font-semibold duration-200 hover:scale-95 ' + ( !isValid ? ' opacity-50' : '')}>
@@ -186,7 +162,7 @@ const PaymentForm = () => {
 
                 <ul className=''>
                     <p className='font-semibold text-lg text-gray-600 my-2'>Included in your booking</p>
-                    {['Free cancellation within 24 hours', `${luggage} baggage included`, 'Seat Selection at check-in', '24/7 customer support'].map(text => <li className='flex items-center gap-2 text-gray-600'><span className='text-xl'>•</span> <span>{text}</span></li>)}
+                    {['Free cancellation within 24 hours', `${luggage} baggage included`, 'Seat Selection at check-in', '24/7 customer support'].map((text, index) => <li key={index} className='flex items-center gap-2 text-gray-600'><span className='text-xl'>•</span> <span>{text}</span></li>)}
                 </ul>
             </Card>
             <div className='flex px-1 my-5 items-start gap-2 text-sm sm:text-base font-semibold text-gray-700'>

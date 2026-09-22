@@ -7,6 +7,7 @@ import TextField from '../../../../Utils/Components/TextField/TextField';
 import Button from '../../../../Utils/Components/Button/Button';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { routeMatcher } from '../../../router';
 
 
 function LoginForm() {
@@ -32,10 +33,10 @@ function LoginForm() {
     const navigate = useNavigate();
     const onSubmit = (data: LoginProps)=> {
         signIn({ firstname: data.email.split('@')[0], lastname: '', email: data.email });
-        navigate('/home');
+        navigate(routeMatcher.home);
     } 
   return (
-    <form onSubmit={handleSubmit(onSubmit, (err)=>console.log(err))} className=' m-auto rounded-2xl mt-5 bg-white shadow-lg p-8'>
+    <form onSubmit={handleSubmit(onSubmit, (err)=>console.error(err))} className=' m-auto rounded-2xl mt-5 bg-white shadow-lg p-8'>
         <h1 className='text-2xl font-bold'>Welcome back</h1>
         <p className='text-sm mt-4 text-gray-500'>Sign in to your account to manage your bookings</p>
         <Controller 

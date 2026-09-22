@@ -6,21 +6,8 @@ import type { Flight } from "../../../types";
 import { useNavigate } from "react-router-dom";
 import { useBookFlightStore } from "../BookFlight/store";
 import { routeMatcher } from "../../router";
+import Image from "../../../Utils/Components/Image/Image";
 
-// type FlightCard = {
-//     imagePath:string,
-//     city: string,
-//     country: string,
-//     price: number,
-//     rating: number,
-//     departureTime: string,
-//     description: string,
-//     isLiked: boolean,
-//     isPopular:boolean,
-//     ratingNumber: number,
-//     caracteristics: string[],
-//     hasBookingButton?: boolean
-// }
 
 export const currency = '$';
 
@@ -30,11 +17,9 @@ const FlightCard:FC<{card:Flight, hasBookingButton?: boolean}> = ({card, hasBook
     const {setFlightSelectedInfos, setFlightInfos, flightInfos} = useBookFlightStore();
   return (
     <div className="rounded-xl border-[0.5px] bg-white border-gray-300 shadow-lg gap-5 mb-7 pb-10 duration-200 ">
-        <div className="preview w-full h-70 bg-gray-300 rounded-t-lg mb-4 relative overflow-hidden">
-            <img onError={(img)=> {
-                img.currentTarget.src='/Images/no_images.jpg'
-                }} src={card.imagePath[0]} alt={`${card.city} image`} className="w-full h-full object-cover rounded-t-md hover:scale-110 duration-200"/>
-            <Badge className="absolute bottom-3 left-5" size="lg" color="white" leftSection={<MapPin size={15} stroke="var(--sb-blue-250)" />}>
+        <div className="preview w-full h-70 bg-gray-300 rounded-t-lg mb-4 relative overflow-hidden border-b border-b-gray-200">
+            <Image src={card.imagePath[0]} alt={`${card.city} image`} className="w-full h-full bg-cover object-cover rounded-t-xl hover:scale-110 duration-200 "/>
+            <Badge className="absolute bottom-3 left-5" color="white" size="lg" leftSection={<MapPin size={15} stroke="var(--sb-blue-250)" />}>
                 <span className="text-gray-700 text-md">{card.toCountry}</span>
             </Badge>
             <ThemeIcon
@@ -147,7 +132,7 @@ const FlightCard:FC<{card:Flight, hasBookingButton?: boolean}> = ({card, hasBook
                                 Iposition="right"
                                 onClick={()=>{
                                     setFlightSelectedInfos(card);
-                                    setFlightInfos({... flightInfos, travelFrom: card.fromCountry, travelTo: card.toCountry, departureDate: card.departureAt, returnDate: card.landingAt, travelClass: card.classTravel
+                                    setFlightInfos({...flightInfos, travelFrom: card.fromCountry, travelTo: card.toCountry, departureDate: card.departureAt, returnDate: card.landingAt, travelClass: card.classTravel
                                     });
                                     navigate(`${routeMatcher.booking}?step=2`);
                                 }}

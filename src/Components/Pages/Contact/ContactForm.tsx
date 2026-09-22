@@ -19,7 +19,7 @@ function ContactForm() {
     };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit, (err)=> console.log(err))} className='rounded-2xl p-5 sm:p-8 lg:p-10 bg-white w-full m-auto shadow-2xs border-[0.5px] border-gray-300 my-0 h-full'>
+    <form onSubmit={handleSubmit(onSubmit, (err)=> console.error(err))} className='rounded-2xl p-5 sm:p-8 lg:p-10 bg-white w-full m-auto shadow-2xs border-[0.5px] border-gray-300 my-0 h-full'>
       <div className='h-full flex flex-col justify-center'>
         {
           isSubmitted ? 
