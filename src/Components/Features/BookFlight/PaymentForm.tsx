@@ -2,7 +2,7 @@ import { Clock, CornerRightDown, CreditCard, Lock, MapPin, Plane, Shield } from 
 import Card from '../../../Utils/Components/Card/Card'
 import { useBookFlightStore } from './store';
 import { formatDuration } from '../../../Utils/Functions/formatDuration';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { TextInput } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';

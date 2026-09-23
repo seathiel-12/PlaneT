@@ -28,7 +28,7 @@ const BookFlightForm:FC<{setResearchedFlights: Dispatch<SetStateAction<Flight[]>
     const { setActiveStep } = useStepperContext();
     const [oneWay, setOneWay] = useState(false);
     const {flightInfos, setFlightInfos } = useBookFlightStore();
-    const {control, handleSubmit, setValue, getValues, formState:{isValid}} = useForm<BookFlightProps>({
+    const {control, handleSubmit, formState:{isValid}} = useForm<BookFlightProps>({
         resolver: zodResolver(BookFlightSchema),
         mode: 'onChange',
         defaultValues:{

@@ -6,7 +6,6 @@ import { fadeInOnScroll } from '../../../Utils/Components/AnimationComponent/Scr
 import { ExpandableCard } from '../../../Utils/Components/AnimationComponent/ExpandableCard/ExpandableCard';
 import { useNavigate } from 'react-router-dom';
 import { useBookFlightStore } from '../../Features/BookFlight/store';
-import { cities } from '../../Features/BookFlight/BookFlightForm';
 import { routeMatcher } from '../../router';
 import type {Flight}  from '../../../types';
 import { useQuery } from '@tanstack/react-query';
@@ -167,7 +166,7 @@ const PreviewElement:FC<{card: Flight}> = ({ card }) => {
 // Composant pour l'élément détails
 const DetailsElement:FC<{card:Flight}> = ({ card }) => {
     const navigate = useNavigate();
-    const {flightInfos, setFlightSelectedInfos, setFlightInfos } = useBookFlightStore();
+    const { setFlightSelectedInfos, setFlightInfos } = useBookFlightStore();
 
   return (
       <div className="w-full">
