@@ -26,13 +26,13 @@ Le serveur JSON écoute sur `http://localhost:3000` et lit `db.json`. En dévelo
 
 ## Production
 
-Construire et démarrer l’application avec le serveur Node intégré :
+Construire les fichiers frontend et démarrer automatiquement le serveur Node intégré :
 
 ```sh
-npm run serve:prod
+npm run build
 ```
 
-La commande construit `dist`, puis démarre `server.js`. Le même serveur sert les fichiers frontend, fournit la route en lecture seule `GET /flights` depuis `db.json` et expose `GET /health` pour le contrôle de disponibilité. Les filtres de vols utilisés par l’application (`price_gt`, `price_lt`, `toCountry_like`, `:contains`, `:gte` et les filtres d’égalité) sont pris en charge. Pour déployer un build déjà construit, exécuter `npm start`. Le serveur écoute sur `0.0.0.0` et utilise `PORT` (3000 par défaut), selon les variables de la plateforme d’hébergement.
+La commande lance `tsc`, construit `dist`, puis garde le processus actif en servant l’application. Pour générer uniquement les fichiers sans démarrer le serveur, exécuter `npm run build:assets`. `npm run serve:prod` est un alias de `npm run build`. Le même serveur sert les fichiers frontend, fournit la route en lecture seule `GET /flights` depuis `db.json` et expose `GET /health` pour le contrôle de disponibilité. Les filtres de vols utilisés par l’application (`price_gt`, `price_lt`, `toCountry_like`, `:contains`, `:gte` et les filtres d’égalité) sont pris en charge. Pour démarrer un build déjà généré, exécuter `npm start`. Le serveur écoute sur `0.0.0.0` et utilise `PORT` (3000 par défaut), selon les variables de la plateforme d’hébergement.
 
 ## Commandes
 
@@ -40,7 +40,8 @@ La commande construit `dist`, puis démarre `server.js`. Le même serveur sert l
 | --- | --- |
 | `npm run dev` | Démarre Vite en mode développement. |
 | `npm run serve` | Démarre l’API JSON locale sur le port 3000. |
-| `npm run build` | Vérifie les types TypeScript et construit les fichiers de production. |
+| `npm run build` | Construit les fichiers de production et lance le serveur Node. |
+| `npm run build:assets` | Vérifie les types TypeScript et construit les fichiers sans démarrer le serveur. |
 | `npm run preview` | Sert localement le dernier build. |
 | `npm start` | Démarre le serveur Node de production (après le build). |
 | `npm run serve:prod` | Construit l’application puis démarre frontend et API ensemble. |
