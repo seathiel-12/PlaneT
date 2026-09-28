@@ -362,7 +362,7 @@ function SearchBar() {
                                                 <div className="flex items-center gap-2 max-w-[60%] sm:max-w-none">
                                                     <input
                                                         className={clsx(
-                                                            'outline-none w-max text-right sm:text-left sm:w-full relative z-3 bg-transparent cursor-pointer',
+                                                            'outline-none max-w-full w-max text-right sm:text-left sm:w-full relative z-3 bg-transparent cursor-pointer',
                                                             destination && 'font-semibold'
                                                         )}
                                                         type="text"
