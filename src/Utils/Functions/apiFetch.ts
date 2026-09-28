@@ -17,7 +17,9 @@ const normalizeUrl = (input: RequestInfo | URL, baseUrl?: string, params?: Recor
   let url = rawUrl;
 
   if (!baseUrl) {
-    baseUrl = import.meta.env.VITE_APP_BASE_BACKEND_URL || 'http://localhost:3000';
+    baseUrl = import.meta.env.PROD
+      ? window.location.origin
+      : import.meta.env.VITE_APP_BASE_BACKEND_URL || 'http://localhost:3000';
     if (baseUrl && !/^https?:\/\//i.test(url) && !url.startsWith('/')) {
       const normalizedBase = baseUrl.replace(/\/+$/, '');
       const normalizedPath = url.replace(/^\/+/, '');

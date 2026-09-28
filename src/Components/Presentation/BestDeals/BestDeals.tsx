@@ -23,7 +23,7 @@ import { useToasting } from "../../../Utils/Functions/useToasting";
     const [flights, setFlights] = useState<Flight[]>([]);
     const getBestDeals = async () => {
         try {
-            const data = await apiFetch<Flight[]>('http://localhost:3000/flights', {
+            const data = await apiFetch<Flight[]>('flights', {
                 params: { price_lt: 500 },
                 timeout: 10000,
             });

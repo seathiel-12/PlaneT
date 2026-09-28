@@ -22,7 +22,7 @@ const PopularDestinations = () => {
     const {notify} = useToasting();
     const {isLoading} = useQuery({queryKey: ['popularDestinations'], queryFn: async ()=>{
         try{
-            const res = await apiFetch<Flight[]>('http://localhost:3000/flights', {
+            const res = await apiFetch<Flight[]>('flights', {
                 params: {
                     isPopular: true
                 }
@@ -44,7 +44,7 @@ const PopularDestinations = () => {
     const {refetch} = useQuery({
         queryKey:['AllDestinations'],
         queryFn: async ()=>{
-           const res = await apiFetch('http://localhost:3000/flights');
+           const res = await apiFetch('flights');
            return res;
         },
         enabled: false

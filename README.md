@@ -22,7 +22,17 @@ Pour disposer des résultats de vols de démonstration, lancer aussi le serveur 
 npm run serve
 ```
 
-Le serveur JSON écoute sur `http://localhost:3000` et lit `db.json`. L’application utilise cette URL par défaut. Une URL alternative peut être fournie avec `VITE_APP_BASE_BACKEND_URL`.
+Le serveur JSON écoute sur `http://localhost:3000` et lit `db.json`. En développement, l’application utilise cette URL par défaut; une URL alternative peut être fournie avec `VITE_APP_BASE_BACKEND_URL`. En production, l’API est servie sur la même origine que le frontend.
+
+## Production
+
+Construire et démarrer l’application avec le serveur Node intégré :
+
+```sh
+npm run serve:prod
+```
+
+La commande construit `dist`, puis démarre `server.js`. Le même serveur sert les fichiers frontend, fournit la route en lecture seule `GET /flights` depuis `db.json` et expose `GET /health` pour le contrôle de disponibilité. Les filtres de vols utilisés par l’application (`price_gt`, `price_lt`, `toCountry_like`, `:contains`, `:gte` et les filtres d’égalité) sont pris en charge. Pour déployer un build déjà construit, exécuter `npm start`. Le serveur écoute sur `0.0.0.0` et utilise `PORT` (3000 par défaut), selon les variables de la plateforme d’hébergement.
 
 ## Commandes
 
@@ -32,6 +42,8 @@ Le serveur JSON écoute sur `http://localhost:3000` et lit `db.json`. L’applic
 | `npm run serve` | Démarre l’API JSON locale sur le port 3000. |
 | `npm run build` | Vérifie les types TypeScript et construit les fichiers de production. |
 | `npm run preview` | Sert localement le dernier build. |
+| `npm start` | Démarre le serveur Node de production (après le build). |
+| `npm run serve:prod` | Construit l’application puis démarre frontend et API ensemble. |
 | `npm run lint` | Exécute ESLint sur le dépôt. |
 
 ## Fonctionnalités
