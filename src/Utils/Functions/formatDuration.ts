@@ -1,3 +1,4 @@
+/** Formats the elapsed time between two date-time strings for display. */
 export const formatDuration = (temp1: string, temp2: string): string => {
 	const start = new Date(temp1).getTime();
 	const end = new Date(temp2).getTime();

@@ -1,5 +1,7 @@
 import toast from 'react-hot-toast';
+/** Returns the app's typed success, error and warning toast helpers. */
 export const useToasting = () => {
+    /** Displays a notification using the shared toast style. */
     const notify = (message: string, type: 'success' | 'error' | 'warning') => {
     switch (type) { 
         case 'success':

@@ -1,6 +1,7 @@
 import { Lock, Mail } from 'lucide-react'
 import { Link } from 'react-router';
 import { Controller, useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { LoginSchema, type LoginProps } from './type';
 import {zodResolver} from '@hookform/resolvers/zod';
 import TextField from '../../../../Utils/Components/TextField/TextField';
@@ -30,15 +31,22 @@ function LoginForm() {
         resolver: zodResolver(LoginSchema)
     });
     const { signIn } = useAuth();
+    const [authError, setAuthError] = useState('');
     const navigate = useNavigate();
-    const onSubmit = (data: LoginProps)=> {
-        signIn({ firstname: data.email.split('@')[0], lastname: '', email: data.email });
-        navigate(routeMatcher.home);
+    const onSubmit = async (data: LoginProps)=> {
+        setAuthError('');
+        try {
+            await signIn(data.email, data.password);
+            navigate(routeMatcher.home);
+        } catch (error) {
+            setAuthError(error instanceof Error ? error.message : 'Could not sign in.');
+        }
     } 
   return (
-    <form onSubmit={handleSubmit(onSubmit, (err)=>console.error(err))} className=' m-auto rounded-2xl mt-5 bg-white shadow-lg p-8'>
+    <form onSubmit={handleSubmit(onSubmit)} className=' m-auto rounded-2xl mt-5 bg-white shadow-lg p-8'>
         <h1 className='text-2xl font-bold'>Welcome back</h1>
         <p className='text-sm mt-4 text-gray-500'>Sign in to your account to manage your bookings</p>
+        {authError && <p role="alert" className="mt-3 text-sm text-red-600">{authError}</p>}
         <Controller 
             control={control}
             name='email'

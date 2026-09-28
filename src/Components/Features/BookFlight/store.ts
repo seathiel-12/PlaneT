@@ -67,7 +67,7 @@ export const useBookFlightStore = create<BookFlightstore>((set)=>({
     set((state)=>({passengersInfos: state.passengersInfos.map((passenger, index)=> index + 1 === num ? {...passenger, [props]: value} : passenger )}))
   },
   setPassengersSetting: (value)=> {set({passengersSetting: {...value}})},
-  setPricePlus: (amount)=> {set((state)=>({price: ((state?.flightSelected?.price ?? 0) * (state?.flightInfos?.passengersCount ?? 0)) + amount}))} ,
+  setPricePlus: (amount)=> {set((state)=>({price: ((state?.flightSelected?.price ?? 0) * (state?.flightInfos?.passengersCount ?? 0) * (state.flightInfos.returnDate ? 2 : 1)) + amount}))} ,
   setIsBooked: (value) => {set(()=>({isBooked:value}))},
   reset: () => {set(defaultBookingState)} 
 }))

@@ -38,7 +38,7 @@ function BookFlight() {
     });
     const [levelSlider, setLevelSlider] = useState(0);
     const [proceedToPayment, setProceedToPayment] = useState(false)
-    const {setFlightSelectedInfos, flightSelected} = useBookFlightStore();
+    const {setFlightSelectedInfos, flightSelected, reset} = useBookFlightStore();
     const {flightInfos, passengersInfos, passengersSetting} = useBookFlightStore();
     const [researchedFlights, setResearchFlights] = useState<Flight[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -116,7 +116,7 @@ function BookFlight() {
         { 
             label: 'Payment',
             render: ()=> {
-                return !proceedToPayment ? (<div className='card-reveal rounded-2xl m-auto w-full max-w-2xl text-center bg-white p-6 sm:p-10 md:p-15 shadow-xs border-[0.5px] border-gray-200 my-10'>
+                return !proceedToPayment ? (<div className='card-reveal rounded-2xl m-auto w-full max-w-2xl text-center bg-white p-6 sm:p-10 md:p-15 md:px-20 shadow-xs border-[0.5px] border-gray-200 my-10'>
                     <div className='rounded-full p-3 bg-(--sb-blue-fade-4) w-max m-auto my-4 scale-130 relative bottom-2'><CreditCard stroke='var(--sb-blue-250)' /></div>
                     <h1 className='playfair-display text-2xl sm:text-3xl'>Ready for Payment</h1>
                     <p className='text-gray-400 text-base sm:text-lg my-3'>Your booking details have been saved. Proceed to payment to complete your reservation.</p>
@@ -128,7 +128,10 @@ function BookFlight() {
     ];
 
     const canAccessStep = (step: number) => {
-        if (step <= 0) return true;
+        if (step <= 0) {
+            reset();
+            return true
+        };
         if (!BookFlightSchema.safeParse(flightInfos).success) return false;
         if (step === 1) return true;
         if (!flightSelected) return false;
@@ -161,7 +164,7 @@ function BookFlight() {
             <p className='page-reveal-delay-2 page-reveal text-center text-base sm:text-lg text-gray-400 px-4'>Review your booking and complete the payment</p>
         </div>
 
-        <div className='w-full max-w-6xl px-4 sm:px-6 lg:px-8 m-auto my-8 sm:my-10'>
+        <div className='md:w-[90%] max-w-6xl px-4 sm:px-6 lg:px-8 m-auto my-8 sm:my-10'>
             <StepperContext.Provider value={{activeStep, setActiveStep: guardedSetActiveStep, levelSlider, setLevelSlider}}>
                 <LinearStepper steps={steps} />
             </StepperContext.Provider>

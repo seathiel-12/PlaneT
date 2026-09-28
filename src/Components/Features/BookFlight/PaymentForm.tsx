@@ -64,7 +64,7 @@ const PaymentForm = () => {
     const FEES = 50;
     const navigate = useNavigate();
     
-
+  
   return (
     <form className='my-6 sm:my-10 flex flex-col lg:flex-row gap-5'>
         <div className='w-full lg:w-[65%] min-w-0'>
@@ -115,7 +115,7 @@ const PaymentForm = () => {
                     :
                     <Lock width={20}/>
                 }
-                <span>{`Pay $${price + FEES}.00`}</span>
+                <span>{`Pay $${(price + FEES).toFixed(2)}`}</span>
             </button>
         </div>
 
@@ -156,7 +156,7 @@ const PaymentForm = () => {
                 <hr className='border-[0.5px] border-gray-300 my-2' />
                 <div className='flex items-center justify-between'>
                     <p className='font-semibold text-xl'>Total</p>
-                    <p className='text-2xl font-semibold text-(--sb-blue-250)'>{`$${price + FEES}`}</p>
+                    <p className='text-2xl font-semibold text-(--sb-blue-250)'>{`$${(price + FEES).toFixed(2)}`}</p>
                 </div>
                 <hr className='border-[0.5px] border-gray-300 my-5' />
 

@@ -12,6 +12,7 @@ type RevealOptions = {
   refreshKey?: string | number;
 };
 
+/** Shared lifecycle for scroll-triggered text and card reveal animations. */
 const useGsapReveal = ({ selector, start = 'top 84%', stagger = 0.08, containerRef: sharedRef, refreshKey }: RevealOptions, from: gsap.TweenVars) => {
   const localRef = useRef<HTMLDivElement>(null);
   const containerRef = sharedRef ?? localRef;
@@ -56,8 +57,10 @@ const useGsapReveal = ({ selector, start = 'top 84%', stagger = 0.08, containerR
   return containerRef;
 };
 
+/** Reveals elements marked `data-reveal-text` as they enter the viewport. */
 export const useGsapTextReveal = (options: Omit<RevealOptions, 'selector'> = {}) =>
   useGsapReveal({ ...options, selector: '[data-reveal-text]' }, { y: 28 });
 
+/** Reveals elements marked `data-reveal-card` as they enter the viewport. */
 export const useGsapCardReveal = (options: Omit<RevealOptions, 'selector'> = {}) =>
   useGsapReveal({ ...options, selector: '[data-reveal-card]' }, { y: 42, scale: 0.96 });

@@ -6,21 +6,30 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { routeMatcher } from '../../../router';
+import { useState } from 'react';
 
 function RegisterForm() {
   const {handleSubmit, control} = useForm<RegisterProps>({
-    resolver: zodResolver(RegisterSchema)
+    resolver: zodResolver(RegisterSchema),
+    mode: 'onChange'
   });
-  const { signIn } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
-  const onSubmit = (data:RegisterProps)=>{
-    signIn({ firstname: data.firstname, lastname: data.lastname, email: data.email });
-    navigate(routeMatcher.home);
+  const [authError, setAuthError] = useState('');
+  const onSubmit = async (data:RegisterProps)=>{
+    setAuthError('');
+    try {
+      await register({ firstname: data.firstname, lastname: data.lastname, email: data.email }, data.password);
+      navigate(routeMatcher.home);
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : 'Could not create account.');
+    }
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)} className=' m-auto rounded-2xl mt-5 bg-white shadow-lg p-8'>
         <h1 className="font-bold text-2xl">Create Account</h1>
         <p className="py-3">Join PlaneT and start exploring the world</p>
+        {authError && <p role="alert" className="mb-3 text-sm text-red-600">{authError}</p>}
         
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-3 sm:flex-row items-center sm:gap-5 ">

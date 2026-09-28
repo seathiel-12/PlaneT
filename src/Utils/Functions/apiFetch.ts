@@ -17,7 +17,7 @@ const normalizeUrl = (input: RequestInfo | URL, baseUrl?: string, params?: Recor
   let url = rawUrl;
 
   if (!baseUrl) {
-    baseUrl = 'http://localhost:3000';
+    baseUrl = import.meta.env.VITE_APP_BASE_BACKEND_URL || 'http://localhost:3000';
     if (baseUrl && !/^https?:\/\//i.test(url) && !url.startsWith('/')) {
       const normalizedBase = baseUrl.replace(/\/+$/, '');
       const normalizedPath = url.replace(/^\/+/, '');
@@ -87,6 +87,13 @@ const extractErrorMessage = (payload: unknown): string => {
   return 'Request failed';
 };
 
+/**
+ * Sends a JSON-oriented fetch request with URL parameters, timeout and normalized errors.
+ * Relative URLs use `VITE_APP_BASE_BACKEND_URL` or the local JSON server by default.
+ * @param input URL, Request, or relative path.
+ * @param options Fetch options plus JSON body, query parameters, base URL and timeout.
+ * @returns A normalized response containing the decoded body when present.
+ */
 export async function apiFetch<T>(
   input: RequestInfo | URL,
   options: ApiFetchOptions = {},

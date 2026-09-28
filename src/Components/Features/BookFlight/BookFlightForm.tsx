@@ -12,10 +12,9 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import dayjs from 'dayjs';
 import type { Flight } from '../../../types';
 import { apiFetch } from '../../../Utils/Functions/apiFetch';
-import { useQuery } from '@tanstack/react-query';
 import { useToasting } from '../../../Utils/Functions/useToasting';
 import { BookFlightSchema } from './validation';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import type { BookFlightProps } from './type';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -28,7 +27,7 @@ const BookFlightForm:FC<{setResearchedFlights: Dispatch<SetStateAction<Flight[]>
     const { setActiveStep } = useStepperContext();
     const [oneWay, setOneWay] = useState(false);
     const {flightInfos, setFlightInfos } = useBookFlightStore();
-    const {control, handleSubmit, formState:{isValid}} = useForm<BookFlightProps>({
+    const {control, handleSubmit, formState:{isValid}, setValue } = useForm<BookFlightProps>({
         resolver: zodResolver(BookFlightSchema),
         mode: 'onChange',
         defaultValues:{
@@ -36,6 +35,8 @@ const BookFlightForm:FC<{setResearchedFlights: Dispatch<SetStateAction<Flight[]>
             passengersCount: 1
         },
     });
+    const departureDate = useWatch({ control, name: 'departureDate' });
+    const returnDate = useWatch({ control, name: 'returnDate' });
 
     const switchDestinations = () => {
         if(!(flightInfos.travelFrom || flightInfos.travelTo))
@@ -47,7 +48,7 @@ const BookFlightForm:FC<{setResearchedFlights: Dispatch<SetStateAction<Flight[]>
         setFlightInfos({...flightInfos, travelTo: from, travelFrom: to});
     }
     const {notify} = useToasting();
-    const getFilteredFlights = async ()=> {
+    const getFilteredFlights = async (searchValues: BookFlightProps) => {
         setIsLoading(true);
 
         const formatIsoDate = (value: string) => {
@@ -57,22 +58,22 @@ const BookFlightForm:FC<{setResearchedFlights: Dispatch<SetStateAction<Flight[]>
         };
 
         const params = new URLSearchParams();
-        if (flightInfos.travelFrom) params.set('fromCountry:contains', flightInfos.travelFrom);
-        if (flightInfos.travelTo) params.set('toCountry:contains', flightInfos.travelTo);
-        if (flightInfos.departureDate) params.set('departureAt:contains', formatIsoDate(flightInfos.departureDate));
-        if (flightInfos.travelClass) params.set('classTravel', flightInfos.travelClass);
-        if(flightInfos.passengersCount) params.set('seatsLeft:gte', flightInfos.passengersCount.toString());
+        if (searchValues.travelFrom) params.set('fromCountry:contains', searchValues.travelFrom);
+        if (searchValues.travelTo) params.set('toCountry:contains', searchValues.travelTo);
+        if (searchValues.departureDate) params.set('departureAt:contains', formatIsoDate(searchValues.departureDate));
+        if (searchValues.travelClass) params.set('classTravel', searchValues.travelClass);
+        if (searchValues.passengersCount) params.set('seatsLeft:gte', searchValues.passengersCount.toString());
 
         const query = `flights?${params.toString()}`;
 
         try{
             const res = await apiFetch<Flight[]>(query, {method: 'GET'});
             if(res.success){
-                setResearchedFlights(Array.isArray(res.body) ?   
-                res.body : []);
+                setResearchedFlights(Array.isArray(res.body) ? res.body : []);
                 return res;
             }
-        }catch(error){
+            notify('Error fetching filtered flights.', 'error');
+        } catch {
             notify('Error fetching filtered flights.', 'error');
         }finally{
             setIsLoading(false)
@@ -80,25 +81,19 @@ const BookFlightForm:FC<{setResearchedFlights: Dispatch<SetStateAction<Flight[]>
         return false;
     }
 
-    const {refetch} = useQuery({
-        queryKey:['getfilteredflights'],
-        queryFn: getFilteredFlights,
-        enabled: false
-    })
-
-    const searchFlights = (data:BookFlightProps) => {
+    const searchFlights = async (data: BookFlightProps) => {
         const validation = BookFlightSchema.safeParse(data);
         if (!validation.success) {
             notify(validation.error.issues[0]?.message ?? 'Please complete the search form.', 'error');
             return;
         }
         setActiveStep(1);
-        refetch();
+        await getFilteredFlights(data);
     };
 
-    const onSubmit = (data:BookFlightProps) => {
+    const onSubmit = async (data: BookFlightProps) => {
         setFlightInfos(data);
-        searchFlights(data);
+        await searchFlights(data);
     }
 
   return (
@@ -166,9 +161,15 @@ const BookFlightForm:FC<{setResearchedFlights: Dispatch<SetStateAction<Flight[]>
                                         </label>
                                     }>
                                         <DesktopDatePicker
-                                            minDate={dayjs()}
+                                            value={field.value ? dayjs(field.value) : null}
+                                            minDate={label === 'Return' && departureDate ? dayjs(departureDate) : dayjs()}
+                                            disabled={label === 'Return' && !departureDate}
                                             onChange={(value)=> {
-                                                field.onChange(value?.toString())
+                                                const nextDate = value?.isValid() ? value.format('YYYY-MM-DD') : '';
+                                                field.onChange(nextDate);
+                                                if (label === 'Departure' && returnDate && (!nextDate || dayjs(returnDate).isBefore(dayjs(nextDate), 'day'))) {
+                                                    setValue('returnDate', '', { shouldDirty: true, shouldValidate: true });
+                                                }
                                             }}
                                             className="date-picker-planet"/>
                                     </DemoItem>

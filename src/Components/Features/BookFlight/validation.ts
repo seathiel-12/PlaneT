@@ -1,5 +1,6 @@
 import { z } from 'zod/v4';
 
+/** Checks that a date string parses to today or a later local calendar day. */
 const isTodayOrLater = (value: string) => {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return false;
@@ -16,6 +17,7 @@ const FlightDateSchema = z.string()
     .min(1, { error: 'Date is required.' })
     .refine(isTodayOrLater, { error: 'Date must be today or later.' });
 
+/** Validates flight-search and booking-form values. */
 export const BookFlightSchema = z.object({
     travelFrom: z.string().trim().min(2, { error: 'Departure city is required.' }),
     travelTo: z.string().trim().min(2, { error: 'Destination city is required.' }),
@@ -25,6 +27,7 @@ export const BookFlightSchema = z.object({
     travelClass: z.enum(['Business', 'Economy', 'First Class'])
 });
 
+/** Validates the identity and contact fields for one passenger. */
 export const PassengerInfoSchema = z.object({
     num: z.number().int().min(1),
     firstname: z.string().trim().min(2, { error: 'Name required!' }),
@@ -36,19 +39,23 @@ export const PassengerInfoSchema = z.object({
     phoneNumber: z.string().trim().min(10, { error: 'Invalid format number!' })
 });
 
+/** Validates a non-empty list of passenger records. */
 export const PassengersSchema = z.array(PassengerInfoSchema).min(1);
 
+/** Validates seat, luggage and insurance choices. */
 export const PassengerSettingsSchema = z.object({
     seat: z.string().trim().min(1),
     luggage: z.string().trim().min(1),
     insurance: z.boolean()
 });
 
+/** Validates the complete passenger step. */
 export const PassengerFormSchema = z.object({
     passengers: PassengersSchema,
     settings: PassengerSettingsSchema,
 });
 
+/** Validates the simulated credit-card payment form. */
 export const PaymentCreditSchema = z.object({
     cardNumber: z.string().trim().min(16, { error: 'Card number must be 16 digits.' }).max(16, { error: 'Card number must be 16 digits.' }),
     cardholderName: z.string().trim().min(2, { error: 'Cardholder name is required.' }).refine((value) => /^[a-zA-Z\s]+$/.test(value), { error: 'Cardholder name must contain only letters and spaces.' }),
@@ -59,16 +66,19 @@ export const PaymentCreditSchema = z.object({
 
 export type PaymentCreditType = z.infer<typeof PaymentCreditSchema>;
 
+/** Validates consent for the placeholder MyFeda payment option. */
 export const PaymentMyFedaSchema = z.object({
     agreement: z.literal(true, { error: 'You must accept the booking terms.' })
 });
 
 export type PaymentMyFedaType = z.infer<typeof PaymentMyFedaSchema>;
 
+/** Selects the Zod schema matching the chosen payment method. */
 export const paymentMethodSchema = (type: string) => {
     return type === 'credit-card' ? PaymentCreditSchema : PaymentMyFedaSchema;
 }
 
+/** Validates fields submitted by the contact form. */
 export const ContactFormSchema = z.object({
     firstname: z.string().trim().min(2, { error: 'First name name is required.' }).refine((value) => /^[a-zA-Z\s]+$/.test(value), { error: 'First name must contain only letters and spaces.' }),
     lastname: z.string().trim().min(2, { error: 'Last name name is required.' }).refine((value) => /^[a-zA-Z\s]+$/.test(value), { error: 'Last name must contain only letters and spaces.' }),

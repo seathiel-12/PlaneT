@@ -8,7 +8,7 @@ import AuthLayout from './Layout/AuthLayout';
 import LoginForm from './Features/Auth/login/LoginForm';
 import RegisterForm from './Features/Auth/login/RegisterForm';
 import Destination from './Pages/Destinations/Destination';
-import PaymentChecked from './Features/BookFlight/PaymentChecked';
+import PaymentChecked from './Pages/PaymentChecked';
 import { Navigate } from 'react-router-dom';
 import { createElement } from 'react';
 import { useBookFlightStore } from './Features/BookFlight/store';
@@ -16,7 +16,7 @@ import MyBookings from './Pages/MyBookings';
 
 const ProtectedPaymentChecked = () => {
     const { isBooked, flightSelected } = useBookFlightStore();
-    return isBooked && flightSelected
+    return (isBooked && flightSelected)
         ? createElement(PaymentChecked)
         : createElement(Navigate, { to: '/', replace: true });
 };
@@ -39,6 +39,7 @@ const routes = createBrowserRouter([
     }
 ]);
 
+/** Central route paths used for internal navigation. */
 export const routeMatcher = {
     home: '/home',
     login:'/sign-in',
