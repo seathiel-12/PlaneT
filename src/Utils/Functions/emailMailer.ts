@@ -20,9 +20,9 @@ export function isEmailMailerConfigured(): boolean {
 export async function sendBookingConfirmation(booking: CachedBooking, recipient: string, travelerName: string): Promise<void> {
   const env = import.meta.env;
   const settings: EmailSettings = {
-    serviceId: env.VITE_EMAILJS_SERVICE_ID ?? '',
-    templateId: env.VITE_EMAILJS_TEMPLATE_ID ?? '',
-    publicKey: env.VITE_EMAILJS_PUBLIC_KEY ?? '',
+    serviceId: env.EMAILJS_SERVICE_ID ?? '',
+    templateId: env.EMAILJS_TEMPLATE_ID ?? '',
+    publicKey: env.EMAILJS_PUBLIC_KEY ?? '',
   };
   if (!settings.serviceId || !settings.templateId || !settings.publicKey) {
     throw new Error('EmailJS is not configured. Add its service, template, and public key to the local environment.');
