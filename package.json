@@ -6,13 +6,10 @@
   "scripts": {
     "dev": "vite",
     "dev:clean": "rimraf node_modules/.vite && vite",
-    "build": "npm run build:assets && node server.js",
-    "build:assets": "tsc -b && vite build",
+    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "serve": "json-server --watch db.json --port 3000",
-    "start": "node server.js",
-    "serve:prod": "npm run build"
+    "serve": "json-server --watch public/db.json --port 3000"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

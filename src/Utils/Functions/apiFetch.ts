@@ -12,6 +12,60 @@ export type ApiFetchOptions<TBody = unknown> = Omit<RequestInit, 'body' | 'heade
 
 const DEFAULT_TIMEOUT = 15000;
 
+/** Detects flight collection requests, which use public/db.json in production. */
+const isFlightCollectionRequest = (input: RequestInfo | URL): boolean => {
+  const rawUrl = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+  return new URL(rawUrl, window.location.origin).pathname.replace(/\/+$/, '') === '/flights';
+};
+
+/** Applies the app's query filters to the static production flight collection. */
+const filterStaticFlights = (payload: unknown, searchParams: URLSearchParams): unknown[] => {
+  if (!payload || typeof payload !== 'object' || !Array.isArray((payload as { flights?: unknown }).flights)) return [];
+  const flights = (payload as { flights: Record<string, unknown>[] }).flights;
+  return flights.filter((flight) => {
+    for (const [filterKey, expected] of searchParams.entries()) {
+      const match = filterKey.match(/^(.*?)(?::|_)(contains|like|gte|lte|gt|lt)$/i);
+      const property = match?.[1] ?? filterKey;
+      const operator = match?.[2]?.toLowerCase() ?? 'eq';
+      const actual = flight[property];
+      if (actual === undefined || actual === null) return false;
+      if (operator === 'contains' || operator === 'like') {
+        if (!String(actual).toLowerCase().includes(expected.toLowerCase())) return false;
+        continue;
+      }
+
+      let left: string | number | boolean = actual as string | number | boolean;
+      let right: string | number | boolean = expected;
+      if (typeof actual === 'number') right = Number(expected);
+      else if (typeof actual === 'boolean') right = expected.toLowerCase() === 'true';
+      else if (operator !== 'eq' && !Number.isNaN(Number(actual)) && !Number.isNaN(Number(expected))) {
+        left = Number(actual);
+        right = Number(expected);
+      }
+
+      if (operator === 'eq' && String(left).toLowerCase() !== String(right).toLowerCase()) return false;
+      if (operator === 'gte' && !(left >= right)) return false;
+      if (operator === 'lte' && !(left <= right)) return false;
+      if (operator === 'gt' && !(left > right)) return false;
+      if (operator === 'lt' && !(left < right)) return false;
+    }
+    return true;
+  });
+};
+
+/** Merges URL query parameters with the extra params option. */
+const getRequestSearchParams = (input: RequestInfo | URL, params?: ApiFetchOptions['params']): URLSearchParams => {
+  const rawUrl = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+  const searchParams = new URL(rawUrl, window.location.origin).searchParams;
+  Object.entries(params ?? {}).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    (Array.isArray(value) ? value : [value]).forEach((item) => {
+      if (item !== undefined && item !== null) searchParams.append(key, String(item));
+    });
+  });
+  return searchParams;
+};
+
 const normalizeUrl = (input: RequestInfo | URL, baseUrl?: string, params?: Record<string, QueryParamsValue | QueryParamsValue[]>) => {
   const rawUrl = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
   let url = rawUrl;
@@ -91,7 +145,8 @@ const extractErrorMessage = (payload: unknown): string => {
 
 /**
  * Sends a JSON-oriented fetch request with URL parameters, timeout and normalized errors.
- * Relative URLs use `VITE_APP_BASE_BACKEND_URL` or the local JSON server by default.
+ * Relative development URLs use `VITE_APP_BASE_BACKEND_URL` or the local JSON server.
+ * Production flight requests load `public/db.json` and apply query filters in the browser.
  * @param input URL, Request, or relative path.
  * @param options Fetch options plus JSON body, query parameters, base URL and timeout.
  * @returns A normalized response containing the decoded body when present.
@@ -110,7 +165,9 @@ export async function apiFetch<T>(
   } = options;
 
   const method = (requestInit.method ?? 'GET').toUpperCase();
-  const url = normalizeUrl(input, baseUrl, params);
+  const staticFlightRequest = import.meta.env.PROD && isFlightCollectionRequest(input);
+  if (staticFlightRequest && method !== 'GET') throw new Error('Static production flight data only supports GET requests.');
+  const url = staticFlightRequest ? `${window.location.origin}/db.json` : normalizeUrl(input, baseUrl, params);
   const controller = new AbortController();
   const timeoutId = window.setTimeout(() => controller.abort(), timeout);
 
@@ -167,7 +224,7 @@ export async function apiFetch<T>(
     return {
       success: response.ok,
       message: response.statusText,
-      body: payload ?? undefined,
+      body: (staticFlightRequest ? filterStaticFlights(payload, getRequestSearchParams(input, params)) : payload) as T | undefined,
     };
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {

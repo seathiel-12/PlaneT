@@ -22,29 +22,25 @@ Pour disposer des résultats de vols de démonstration, lancer aussi le serveur 
 npm run serve
 ```
 
-Le serveur JSON écoute sur `http://localhost:3000` et lit `db.json`. En développement, l’application utilise cette URL par défaut; une URL alternative peut être fournie avec `VITE_APP_BASE_BACKEND_URL`. En production, l’API est servie sur la même origine que le frontend.
+Le serveur JSON écoute sur `http://localhost:3000` et lit `public/db.json`. En développement, l’application utilise cette URL par défaut; une URL alternative peut être fournie avec `VITE_APP_BASE_BACKEND_URL`. Vite copie le fichier dans le build sous `/db.json`.
 
 ## Production
 
-Construire les fichiers frontend et démarrer automatiquement le serveur Node intégré :
+Construire l’application pour un hébergement statique :
 
 ```sh
 npm run build
 ```
 
-La commande lance `tsc`, construit `dist`, puis garde le processus actif en servant l’application. Pour générer uniquement les fichiers sans démarrer le serveur, exécuter `npm run build:assets`. `npm run serve:prod` est un alias de `npm run build`. Le même serveur sert les fichiers frontend, fournit la route en lecture seule `GET /flights` depuis `db.json` et expose `GET /health` pour le contrôle de disponibilité. Les filtres de vols utilisés par l’application (`price_gt`, `price_lt`, `toCountry_like`, `:contains`, `:gte` et les filtres d’égalité) sont pris en charge. Pour démarrer un build déjà généré, exécuter `npm start`. Le serveur écoute sur `0.0.0.0` et utilise `PORT` (3000 par défaut), selon les variables de la plateforme d’hébergement.
-
+Le build écrit l’application dans `dist/` sans démarrer de serveur. Vite copie `public/db.json` à la racine du build sous `/db.json`. En production, l’application charge ce fichier JSON statique et applique les filtres de vols dans le navigateur; l’hébergeur doit donc publier tout le contenu de `dist/`.
 ## Commandes
 
 | Commande | Rôle |
 | --- | --- |
 | `npm run dev` | Démarre Vite en mode développement. |
 | `npm run serve` | Démarre l’API JSON locale sur le port 3000. |
-| `npm run build` | Construit les fichiers de production et lance le serveur Node. |
-| `npm run build:assets` | Vérifie les types TypeScript et construit les fichiers sans démarrer le serveur. |
+| `npm run build` | Vérifie les types TypeScript et construit les fichiers de production sans démarrer de serveur. |
 | `npm run preview` | Sert localement le dernier build. |
-| `npm start` | Démarre le serveur Node de production (après le build). |
-| `npm run serve:prod` | Construit l’application puis démarre frontend et API ensemble. |
 | `npm run lint` | Exécute ESLint sur le dépôt. |
 
 ## Fonctionnalités
@@ -90,7 +86,7 @@ src/
 └── types.ts            # Modèles partagés
 ```
 
-`src/Components/router.ts` déclare les routes. `src/main.tsx` monte les fournisseurs globaux. `src/Components/Features/BookFlight/store.ts` contient l’état du parcours de réservation. `db.json` est la source de données de l’API locale.
+`src/Components/router.ts` déclare les routes. `src/main.tsx` monte les fournisseurs globaux. `src/Components/Features/BookFlight/store.ts` contient l’état du parcours de réservation. `public/db.json` est la source de données de l’API locale.
 
 ## Configuration locale
 
