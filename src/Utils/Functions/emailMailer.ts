@@ -4,7 +4,7 @@ type EmailSettings = { serviceId: string; templateId: string; publicKey: string 
 
 /** Checks whether the public EmailJS settings required by the frontend are present. */
 export function isEmailMailerConfigured(): boolean {
-  const env = import.meta.env;
+  const env = process.env;
   return Boolean(env.EMAILJS_SERVICE_ID && env.EMAILJS_TEMPLATE_ID && env.EMAILJS_PUBLIC_KEY);
 }
 
@@ -18,7 +18,7 @@ export function isEmailMailerConfigured(): boolean {
  * @param travelerName Name displayed in the email.
  */
 export async function sendBookingConfirmation(booking: CachedBooking, recipient: string, travelerName: string): Promise<void> {
-  const env = import.meta.env;
+  const env = process.env;
   const settings: EmailSettings = {
     serviceId: env.EMAILJS_SERVICE_ID ?? '',
     templateId: env.EMAILJS_TEMPLATE_ID ?? '',
