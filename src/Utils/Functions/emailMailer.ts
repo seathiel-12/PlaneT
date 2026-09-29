@@ -5,7 +5,7 @@ type EmailSettings = { serviceId: string; templateId: string; publicKey: string 
 /** Checks whether the public EmailJS settings required by the frontend are present. */
 export function isEmailMailerConfigured(): boolean {
   const env = import.meta.env;
-  return Boolean(env.VITE_EMAILJS_SERVICE_ID && env.VITE_EMAILJS_TEMPLATE_ID && env.VITE_EMAILJS_PUBLIC_KEY);
+  return Boolean(env.EMAILJS_SERVICE_ID && env.EMAILJS_TEMPLATE_ID && env.EMAILJS_PUBLIC_KEY);
 }
 
 /**
