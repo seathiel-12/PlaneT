@@ -28,6 +28,7 @@ export async function sendBookingConfirmation(booking: CachedBooking, recipient:
     throw new Error('EmailJS is not configured. Add its service, template, and public key to the local environment.');
   }
 
+  const FEES = 50;
   const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -36,13 +37,14 @@ export async function sendBookingConfirmation(booking: CachedBooking, recipient:
       template_id: settings.templateId,
       user_id: settings.publicKey,
       template_params: {
-        to_email: recipient,
+        email: recipient,
         traveler_name: travelerName,
         booking_reference: booking.reference,
         flight_route: `${booking.flight.fromCountry} → ${booking.flight.toCountry}`,
         departure_date: booking.flight.departureAt,
         passengers_count: booking.passengersCount,
-        total_price: booking.flight.price * booking.passengersCount,
+        total_price: booking.price,
+        priceHT: booking.price - FEES      
       },
     }),
   });
