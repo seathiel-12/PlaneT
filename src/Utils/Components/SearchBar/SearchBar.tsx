@@ -246,7 +246,7 @@ function SearchBar() {
     }> => ({
         l1: {
             node: (
-                <div className="h-100 pt-3 px-8 overflow-scroll">
+                <div className="h-100 pt-3 px-6 overflow-scroll">
                     <div className="flex items-center justify-between w-full">
                         <small className="font-bold text-[0.9rem]">Destinations suggested</small>
                         <button onClick={handleCloseOverlay} className="p-3 rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200 duration-200 md:hidden"><X width={15} height={15}/></button>

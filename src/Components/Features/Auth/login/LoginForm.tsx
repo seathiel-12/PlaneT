@@ -1,5 +1,5 @@
 import { Lock, Mail } from 'lucide-react'
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { Controller, useForm } from 'react-hook-form';
 import { useState } from 'react';
 import { LoginSchema, type LoginProps } from './type';
@@ -33,11 +33,16 @@ function LoginForm() {
     const { signIn } = useAuth();
     const [authError, setAuthError] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+    const requestedReturnTo = (location.state as { returnTo?: unknown } | null)?.returnTo;
+    const returnTo = typeof requestedReturnTo === 'string' && requestedReturnTo.startsWith('/') && !requestedReturnTo.startsWith('//')
+        ? requestedReturnTo
+        : routeMatcher.home;
     const onSubmit = async (data: LoginProps)=> {
         setAuthError('');
         try {
             await signIn(data.email, data.password);
-            navigate(routeMatcher.home);
+            navigate(returnTo, { replace: true });
         } catch (error) {
             setAuthError(error instanceof Error ? error.message : 'Could not sign in.');
         }

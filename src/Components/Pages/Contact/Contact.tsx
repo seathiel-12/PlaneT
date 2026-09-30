@@ -4,10 +4,13 @@ import Button from '../../../Utils/Components/Button/Button'
 import Bubble from '../../../Utils/Components/Bubble/Bubble'
 import { useRef } from 'react'
 import { useGsapCardReveal, useGsapTextReveal } from '../../../Utils/Components/AnimationComponent/GsapReveal'
+import { useNavigate } from 'react-router-dom';
+import { routeMatcher } from '../../router';
 
 function Contact() {
 
     const pageRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
     useGsapTextReveal({ containerRef: pageRef, start: 'top 90%' });
     useGsapCardReveal({ containerRef: pageRef, start: 'top 88%', stagger: 0.1 });
     const contactInfos = [
@@ -85,7 +88,7 @@ function Contact() {
                     <h2 className='my-3 font-bold'>Looking for Quick Answers?</h2>
                     <p className=' text-gray-500'>Check our frequently asked questions for instant help with common inquiries.</p>
 
-                    <Button textContent='View FAQs' className='rounded-xl py-1 px-2 border-[0.5px] border-gray-300 shadow-xs bg-white my-3'/>
+                    <Button onClick={() => navigate(routeMatcher.faqs)} textContent='View FAQs' className='rounded-xl py-1 px-2 border-[0.5px] border-gray-300 shadow-xs bg-white my-3'/>
                 </div>
             </div>
             

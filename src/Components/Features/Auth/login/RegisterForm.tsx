@@ -5,6 +5,7 @@ import { RegisterSchema, type RegisterProps } from './type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { routeMatcher } from '../../../router';
 import { useState } from 'react';
 
@@ -15,12 +16,17 @@ function RegisterForm() {
   });
   const { register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const requestedReturnTo = (location.state as { returnTo?: unknown } | null)?.returnTo;
+  const returnTo = typeof requestedReturnTo === 'string' && requestedReturnTo.startsWith('/') && !requestedReturnTo.startsWith('//')
+    ? requestedReturnTo
+    : routeMatcher.home;
   const [authError, setAuthError] = useState('');
   const onSubmit = async (data:RegisterProps)=>{
     setAuthError('');
     try {
       await register({ firstname: data.firstname, lastname: data.lastname, email: data.email }, data.password);
-      navigate(routeMatcher.home);
+      navigate(returnTo, { replace: true });
     } catch (error) {
       setAuthError(error instanceof Error ? error.message : 'Could not create account.');
     }

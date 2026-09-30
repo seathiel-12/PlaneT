@@ -48,7 +48,7 @@ import { useToasting } from "../../../Utils/Functions/useToasting";
     }, [flights]);
 
   return (
-    <div className="bg-gray-50 px-4 py-16 sm:px-8 sm:py-20 lg:px-10">
+    <div id="best-deals" className="bg-gray-50 px-4 py-16 sm:px-8 sm:py-20 lg:px-10">
         <Bubble text="Featured Flights"/>
         <h2 className="playfair-display mt-6 text-center text-3xl sm:text-4xl">Today's Best Deals</h2>
         <p className="my-4 text-center text-base text-gray-500 sm:text-xl">Grab these limited-time offers on popular routes before they're gone.</p>

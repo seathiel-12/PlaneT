@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone } from 'lucide-react'
 import { Link } from 'react-router'
 import { Accordion } from '@mantine/core'
 import Logo from '../Logo'
+import { routeMatcher } from '../../router';
 
 
 function Footer() {
@@ -48,10 +49,10 @@ function Footer() {
               <Accordion.Control><span className='font-bold text-lg text-black playfair-display'>Support</span></Accordion.Control>
               <Accordion.Panel>
                 <ul className='flex flex-col gap-5'>
-                  <Link className='hover:text-black w-max text-sm'>Help</Link>
-                  <Link className='hover:text-black w-max text-sm'>FAQs</Link>
-                  <Link className='hover:text-black w-max text-sm'>Cancellation Policy</Link>
-                  <Link className='hover:text-black w-max text-sm'>Insurance</Link>
+                  <Link to={routeMatcher.help} className='hover:text-black w-max text-sm'>Help</Link>
+                  <Link to={routeMatcher.faqs} className='hover:text-black w-max text-sm'>FAQs</Link>
+                  <Link to={routeMatcher.cancellationPolicy} className='hover:text-black w-max text-sm'>Cancellation Policy</Link>
+                  <Link to={routeMatcher.insurance} className='hover:text-black w-max text-sm'>Insurance</Link>
                 </ul>
               </Accordion.Panel>
             </Accordion.Item>
@@ -61,29 +62,26 @@ function Footer() {
         <div className='hidden justify-between gap-5 lg:grid lg:grid-cols-3'>
           <div>
             <h2 className='font-bold text-lg text-black mb-2 playfair-display'>Company</h2>
-            <ul className='flex flex-col gap-5'>
-              <Link className='hover:text-black w-max text-sm'>About Us</Link>
-              <Link className='hover:text-black w-max text-sm'>Contact</Link>
-              <Link className='hover:text-black w-max text-sm'>Careers</Link>
-              <Link className='hover:text-black w-max text-sm'>Press</Link>
+            <ul className='flex flex-col gap-5 lg:mt-2'>
+              <Link to={routeMatcher.about} className='hover:text-black w-max text-sm'>About Us</Link>
+              <Link to={routeMatcher.contact} className='hover:text-black w-max text-sm'>Contact</Link>
             </ul>
           </div>
           <div>
             <h2 className='font-bold text-lg text-black mb-2 playfair-display'>Travel</h2>
-            <ul className='flex flex-col gap-5'>
-              <Link className='hover:text-black w-max text-sm'>Destinations</Link>
-              <Link className='hover:text-black w-max text-sm'>Booking</Link>
-              <Link className='hover:text-black w-max text-sm'>Guides</Link>
-              <Link className='hover:text-black w-max text-sm'>Deals</Link>
+            <ul className='flex flex-col gap-5 lg:mt-2'>
+              <Link to={routeMatcher.destinations} className='hover:text-black w-max text-sm'>Destinations</Link>
+              <Link  to={routeMatcher.booking} className='hover:text-black w-max text-sm'>Booking</Link>
+              <Link to={`${routeMatcher.deals}`} className='hover:text-black w-max text-sm'>Deals</Link>
             </ul>
           </div>
           <div>
             <h2 className='font-bold text-lg text-black mb-2 playfair-display'>Support</h2>
-            <ul className='flex flex-col gap-5'>
-              <Link className='hover:text-black w-max text-sm'>Help</Link>
-              <Link className='hover:text-black w-max text-sm'>FAQs</Link>
-              <Link className='hover:text-black w-max text-sm'>Cancellation Policy</Link>
-              <Link className='hover:text-black w-max text-sm'>Insurance</Link>
+            <ul className='flex flex-col gap-5 lg:mt-2'>
+              <Link to={routeMatcher.help} className='hover:text-black w-max text-sm'>Help</Link>
+              <Link to={routeMatcher.faqs} className='hover:text-black w-max text-sm'>FAQs</Link>
+              <Link to={routeMatcher.cancellationPolicy} className='hover:text-black w-max text-sm'>Cancellation Policy</Link>
+              <Link to={routeMatcher.insurance} className='hover:text-black w-max text-sm'>Insurance</Link>
             </ul>
           </div>
         </div>
@@ -94,9 +92,9 @@ function Footer() {
         <div className='flex flex-wrap flex-col gap-4 sm:flex-row sm:justify-between'>
           <p>© 2026 PlaneT. All rights reserved.</p>
           <ul className='flex gap-4 sm:gap-7'>
-            <Link className='hover:text-black w-max'>Privacy Policy</Link>
-            <Link className='hover:text-black w-max'>Terms of Service</Link>
-            <Link className='hover:text-black w-max'>Cookie Policy</Link>
+            <Link to={routeMatcher.privacyPolicy} className='hover:text-black w-max'>Privacy Policy</Link>
+            <Link to={routeMatcher.termsOfService} className='hover:text-black w-max'>Terms of Service</Link>
+            <Link to={routeMatcher.cookiePolicy} className='hover:text-black w-max'>Cookie Policy</Link>
           </ul>
         </div>
     </footer>

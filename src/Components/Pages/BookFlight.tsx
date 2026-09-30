@@ -1,4 +1,4 @@
-import { CreditCard, Plane } from 'lucide-react'
+import { CreditCard, LogIn, Plane, UserPlus } from 'lucide-react'
 import Bubble from '../../Utils/Components/Bubble/Bubble'
 import LinearStepper, { type step } from '../../Utils/Components/Stepper/Stepper'
 import BookFlightForm from '../Features/BookFlight/BookFlightForm'
@@ -11,6 +11,10 @@ import { useBookFlightStore } from '../Features/BookFlight/store';
 import type { Flight } from '../../types';
 import { BookFlightSchema, PassengerFormSchema } from '../Features/BookFlight/validation';
 import { useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { Modal } from '@mantine/core';
+import { useAuth } from '../../contexts/AuthContext';
+import { routeMatcher } from '../router';
 
 
 export const StepperContext = createContext<StepperContextProps | undefined>(undefined);
@@ -31,17 +35,28 @@ export const useStepperContext = () => {
 }
 
 function BookFlight() {
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const { user } = useAuth();
     const [activeStep, setActiveStep] = useState(() => {
         const stepParam = Number(searchParams.get('step'));
         return Number.isInteger(stepParam) && stepParam >= 0 && stepParam < 4 ? stepParam : 0;
     });
     const [levelSlider, setLevelSlider] = useState(0);
     const [proceedToPayment, setProceedToPayment] = useState(false)
+    const [loginPromptOpen, setLoginPromptOpen] = useState(false);
     const {setFlightSelectedInfos, flightSelected, reset} = useBookFlightStore();
     const {flightInfos, passengersInfos, passengersSetting} = useBookFlightStore();
     const [researchedFlights, setResearchFlights] = useState<Flight[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const resumeToPayment = () => {
+        if (user) {
+            setProceedToPayment(true);
+        } else {
+            setLoginPromptOpen(true);
+        }
+    };
+    const signInReturnTo = `${routeMatcher.booking}?step=3&resumePayment=1`;
     const steps: step[] = [
         { 
             label: 'Search',
@@ -121,7 +136,7 @@ function BookFlight() {
                     <h1 className='playfair-display text-2xl sm:text-3xl'>Ready for Payment</h1>
                     <p className='text-gray-400 text-base sm:text-lg my-3'>Your booking details have been saved. Proceed to payment to complete your reservation.</p>
 
-                    <Button onClick={()=>setProceedToPayment(true)} textContent='Proceed to payment' Icon={CreditCard} className='text-white bg-(--sb-blue-250) text-lg px-6 py-3 w-max m-auto my-4 mt-6' />
+                    <Button onClick={resumeToPayment} textContent='Proceed to payment' Icon={CreditCard} className='text-white bg-(--sb-blue-250) text-lg px-6 py-3 w-max m-auto my-4 mt-6' />
                 </div>) : <PayementForm/>
             },
         }
@@ -153,6 +168,15 @@ function BookFlight() {
             setProceedToPayment(false);
     }, [activeStep]);
 
+    useEffect(() => {
+        if (user && activeStep === 3 && searchParams.get('resumePayment') === '1') {
+            setProceedToPayment(true);
+            const nextParams = new URLSearchParams(searchParams);
+            nextParams.delete('resumePayment');
+            setSearchParams(nextParams, { replace: true });
+        }
+    }, [activeStep, searchParams, setSearchParams, user]);
+
 
     
   return (
@@ -169,6 +193,33 @@ function BookFlight() {
                 <LinearStepper steps={steps} />
             </StepperContext.Provider>
         </div>
+
+        <Modal
+            opened={loginPromptOpen && !user}
+            onClose={() => setLoginPromptOpen(false)}
+            title="Sign in to continue"
+            centered
+            radius="lg"
+            overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+        >
+            <div className="text-gray-600">
+                <p className="leading-6">Sign in or create an account to save this booking and continue to payment. Your flight and passenger selections will be waiting when you return.</p>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                    <Button
+                        onClick={() => navigate(routeMatcher.login, { state: { returnTo: signInReturnTo } })}
+                        textContent="Sign in"
+                        Icon={LogIn}
+                        className="w-full rounded-xl bg-(--sb-blue-250) px-5 py-2.5 text-white sm:flex-1"
+                    />
+                    <Button
+                        onClick={() => navigate(routeMatcher.register, { state: { returnTo: signInReturnTo } })}
+                        textContent="Create account"
+                        Icon={UserPlus}
+                        className="w-full rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-gray-700 sm:flex-1"
+                    />
+                </div>
+            </div>
+        </Modal>
     </div>
   )
 }

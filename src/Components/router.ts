@@ -13,6 +13,10 @@ import { Navigate } from 'react-router-dom';
 import { createElement } from 'react';
 import { useBookFlightStore } from './Features/BookFlight/store';
 import MyBookings from './Pages/MyBookings';
+import Help from './Pages/Help';
+import CancellationPolicy from './Pages/CancellationPolicy';
+import Insurance from './Pages/Insurance';
+import { CookiePolicy, PrivacyPolicy, TermsOfService } from './Pages/LegalPages';
 
 const ProtectedPaymentChecked = () => {
     const { isBooked, flightSelected } = useBookFlightStore();
@@ -35,6 +39,12 @@ const routes = createBrowserRouter([
             {path: 'book-flight', children:[{path:'', Component: BookFlight}, {path:'booked', Component: ProtectedPaymentChecked}]},
             {path: 'destinations', Component: Destination},
             {path: 'my-bookings', Component: MyBookings},
+            {path: 'help', Component: Help},
+            {path: 'cancellation-policy', Component: CancellationPolicy},
+            {path: 'insurance', Component: Insurance},
+            {path: 'cookie-policy', Component: CookiePolicy},
+            {path: 'privacy-policy', Component: PrivacyPolicy},
+            {path: 'terms-of-service', Component: TermsOfService},
         ]
     }
 ]);
@@ -49,7 +59,15 @@ export const routeMatcher = {
     booking:'/book-flight',
     booked:'/book-flight/booked',
     destinations:'/destinations',
-    myBookings:'/my-bookings'
+    myBookings:'/my-bookings',
+    help:'/help',
+    faqs:'/help#faqs',
+    cancellationPolicy:'/cancellation-policy',
+    insurance:'/insurance',
+    cookiePolicy:'/cookie-policy',
+    privacyPolicy:'/privacy-policy',
+    termsOfService:'/terms-of-service',
+    deals:'/home#best-deals'
 }
 
 export default routes;
