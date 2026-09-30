@@ -13,12 +13,12 @@ function AuthLayout() {
             <Plane strokeWidth={2}/>
         </div>
 
-        <div className='w-max m-auto mt-8 text-center'>
+        <div className='m-auto mt-8 text-center'>
             <h1 className='text-3xl font-bold'>Welcome to <span className='bg-clip-text bg-(--sb-blue-200)'>PlaneT</span></h1>
-            <p className='text-md py-2 text-gray-500'>Sign in to manage your bookings and saved destinations</p>
+            <p className='text-md py-2 text-gray-500 max-w-[95%] m-auto'>Sign in to manage your bookings and saved destinations</p>
         </div>
         
-        <div className='w-[80%] sm:w-[70%] md:w-[60%] lg:w-[40%] xl:w-[35%] m-auto mb-20'>
+        <div className='w-[90%] sm:w-[70%] md:w-[60%] lg:w-[40%] xl:w-[35%] m-auto mb-20 mt-7'>
             <Tabs options={['Sign In', 'Create Account']} onclick={(e)=> {
                 navigator((e.currentTarget.id  === 'Sign In' ? '/sign-in' : '/create-account'))
                 }} current={pathname.includes('sign-in') ? 'Sign In' : 'Create Account'} />
