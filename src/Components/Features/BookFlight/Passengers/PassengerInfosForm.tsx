@@ -306,7 +306,7 @@ const PriceFlight = ()=>{
             </div>
             <button type='submit' onClick={()=> {
                 if(passengersInfos.every(p=> Object.values(p).every(val=> String(val).trim().length>0)))
-                    setActiveStep(3)
+                    setActiveStep(3);
                 }
             } 
             className={clsx('rounded-2xl py-3 px-5 bg-(--sb-blue-250) text-white flex items-center justify-center gap-2 w-full sm:w-auto')}>

@@ -19,6 +19,7 @@ function getEmailConfig() {
       .split(',')
       .map((email) => email.trim().toLowerCase())
       .filter(Boolean),
+    privateKey: env.EMAILJS_PRIVATE_KEY?.trim() ?? ''
   };
 }
 
@@ -65,7 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const emailResponse = await fetch(EMAILJS_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${config.privateKey}` },
       body: JSON.stringify({
         service_id: config.serviceId,
         template_id: config.templateId,
