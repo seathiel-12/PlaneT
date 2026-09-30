@@ -210,7 +210,7 @@ function SearchBar() {
             const isOpened = searchSpan.current.getAttribute('data-open') === 'opened';
             if (id !== 'l3' && isOpened) {
                 const animate = searchSpan.current.animate([
-                    { width: '200px', color: 'white' },
+                    { width: '64px', color: 'white' },
                     { width: '24px', color: 'transparent' }
                 ], {
                     duration: 500,
@@ -486,7 +486,6 @@ function SearchBar() {
                                                 ref={searchSpan} 
                                                 className='elongation text-white font-bold pl-1 hidden'
                                                 data-open="closed"
-                                                style={{maxWidth:'max-content'}}
                                             >
                                                 Search
                                             </span>

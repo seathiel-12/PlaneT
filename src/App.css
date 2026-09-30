@@ -48,7 +48,7 @@ button{
   cursor: pointer;
 }
 .elongation{
-    animation: elongate 1s ease-in-out forwards;
+    animation: elongate 0.5s ease-in-out forwards;
 }
 .elongation-reversed{
     animation: elongate 1s ease-in-out forwards reverse;
@@ -105,7 +105,7 @@ button{
     color: transparent;
   }
   100%{
-    width: 200px;
+    width: 64px;
     color: white;
   }
 }
