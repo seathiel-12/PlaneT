@@ -84,6 +84,7 @@ export async function sendBookingConfirmation(
     passengers_count: booking.passengersCount,
     total_price: booking.price,
     priceHT: booking.price - fees,
+    fees: fees
   };
 
   if (import.meta.env.PROD) {
