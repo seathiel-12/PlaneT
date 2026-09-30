@@ -34,9 +34,10 @@ EMAILJS_SERVICE_ID=service_xxxxxxx
 EMAILJS_TEMPLATE_ID=template_xxxxxxx
 EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxx
 EMAILJS_BLOCKED_EMAILS=foo@example.com,bar@example.com
+EMAILJS_PRIVATE_KEY=xxxxxxxxxxx
 ```
 
-Ces valeurs sont lues par `process.env` dans la fonction Vercel et ne sont pas injectées dans le bundle client. Le `GET /api/proxy` répond uniquement si la configuration requise est présente; il ne renvoie aucune valeur EmailJS. Le `POST /api/proxy` envoie le modèle via l'API EmailJS. Pour tester cette fonction localement, utilisez Vercel CLI (`vercel dev`) et définissez les variables serveur dans l'environnement local.
+Ces valeurs sont lues par `process.env` dans la fonction Vercel et ne sont pas injectées dans le bundle client. Le `GET /api/proxy` répond uniquement si la configuration requise est présente; il ne renvoie aucune valeur EmailJS. Le `POST /api/proxy` envoie le modèle via l'API EmailJS. Pour tester cette fonction localement, utilisez Vercel CLI (`vercel dev`) et définissez les variables serveur dans l'environnement local. La clé privée sert de token pour les requêtes en accord avec la configuration de sécurité dans le compte emailJS concerant le paramètre API.
 
 ## Protections activées
 
