@@ -295,7 +295,7 @@ function SearchBar() {
         l3: {
             node: (
                 <div className="px-10">
-                    <small onClick={handleCloseOverlay} className="px-5 py-1 rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200 duration-200 flex justify-self-center my-2 md:hidden">Cancel</small>
+                    <small onClick={handleCloseOverlay} className="px-5 py-1 rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200 duration-200 flex w-max justify-self-center my-2 md:hidden">Cancel</small>
 
                     {TRAVELERS.map(({ title, sub, key }, index) => (
                         <div key={key}>
@@ -479,7 +479,7 @@ function SearchBar() {
                                             <div className='w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
                                         ) : 
                                         <div
-                                            className='flex items-center'
+                                            className='flex items-center w-max max-w-max'
                                         >
                                             <Search width={24} height={24} stroke='white' strokeWidth={3} />
                                             <span 
