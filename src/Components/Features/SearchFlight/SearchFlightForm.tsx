@@ -168,7 +168,6 @@ const SearchFlightForm: FC<{
                     Icon={Check}
                     className="rounded-full p-2 bg-gray-200 w-max h-max md:translate-y-4 slide-left"
                     textContent=""
-                    onClick={()=>{}}
                     type="submit"
                 />
             

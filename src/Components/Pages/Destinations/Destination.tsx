@@ -11,6 +11,8 @@ import { LoadingSkeleton } from '../../../Utils/Components/AnimationComponent/Lo
 
 const Destination = () => {
     const pageRef = useRef<HTMLDivElement | null>(null);
+    const cardsRef = useRef<HTMLDivElement | null>(null);
+
     const [isLoading, setIsLoading] = useState(false);
     const {lookingFlights} = useBookFlightStore();
 
@@ -23,24 +25,28 @@ const Destination = () => {
     const [filter, setFilter] = useState(initialFilter);
 
     const sortedFlights = useMemo(()=> {
+      console.log('l');
+      
       switch(filter.sortBy){
           case 'Most Popular':
-              return lookingFlights.sort((a,b) =>b.ratingCount - a.ratingCount)
+              return [...lookingFlights].sort((a,b) =>b.ratingCount - a.ratingCount)
           case 'Price: Low to High' :
-              return lookingFlights.sort((a,b) => a.price - b.price)
+              return [...lookingFlights].sort((a,b) => a.price - b.price)
           case 'Price: High to Low':
-              return lookingFlights.sort((a,b) => b.price - a.price)
+              return [...lookingFlights].sort((a,b) => b.price - a.price)
           case 'Highest Rated':
-              return lookingFlights.sort((a,b) => b.rating - a.rating)
+              return [...lookingFlights].sort((a,b) => b.rating - a.rating)
           case 'Name A-Z':
-              return lookingFlights.sort((a,b) => a.city.localeCompare(b.city))
+              return [...lookingFlights].sort((a,b) => a.city.localeCompare(b.city))
           default:
               return lookingFlights;
       }         
     },[lookingFlights, filter.sortBy]);
 
     useGsapTextReveal({ containerRef: pageRef, start: 'top 90%' });
-    useGsapCardReveal({ containerRef: pageRef, start: 'top 88%', stagger: 0.1, refreshKey: sortedFlights.length });
+    useGsapCardReveal({ containerRef: pageRef, start: 'top 88%', stagger: 0.1, refreshKey: lookingFlights.length});
+    useGsapCardReveal({ containerRef: cardsRef, start: 'top 88%', stagger: 0.1, refreshKey: `${sortedFlights.length}-${filter.sortBy}` });
+
 
   return (
     <div ref={pageRef} className='px-4 py-10 sm:px-6 sm:py-15 bg-gray-100'>
@@ -69,7 +75,7 @@ const Destination = () => {
               ) : (sortedFlights.length > 0) ? (
                 <>
                   <p data-reveal-text className="my-10">Showing <strong>{sortedFlights.length}</strong> destinations</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-10 my-5">
+                  <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-10 my-5">
                       {
                       sortedFlights.map((card, index) => (
                           <div data-reveal-card key={`${card.city}-${index}`}>
