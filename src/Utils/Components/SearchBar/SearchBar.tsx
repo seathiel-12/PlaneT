@@ -295,7 +295,7 @@ function SearchBar() {
         l3: {
             node: (
                 <div className="px-10">
-                    <small onClick={handleCloseOverlay} className="px-5 py-1 rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200 duration-200 flex w-max justify-self-center my-2 md:hidden">Cancel</small>
+                    <small onClick={handleCloseOverlay} className="px-5 py-1 rounded-full bg-gray-100 cursor-pointer hover:bg-gray-200 duration-200 w-max block mx-auto my-2 md:hidden">Cancel</small>
 
                     {TRAVELERS.map(({ title, sub, key }, index) => (
                         <div key={key}>
@@ -484,8 +484,9 @@ function SearchBar() {
                                             <Search width={24} height={24} stroke='white' strokeWidth={3} />
                                             <span 
                                                 ref={searchSpan} 
-                                                className='elongation max-w-max text-white font-bold w-max pl-1 hidden'
+                                                className='elongation text-white font-bold pl-1 hidden'
                                                 data-open="closed"
+                                                style={{maxWidth:'max-content'}}
                                             >
                                                 Search
                                             </span>
