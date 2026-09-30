@@ -16,6 +16,7 @@ function App() {
   const queryClient = new QueryClient();
   const {pathname} = useLocation();
   useEffect(()=>{
+    
         document.body.scrollIntoView({
             behavior:'smooth'
         })

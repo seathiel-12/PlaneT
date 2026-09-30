@@ -99,7 +99,7 @@ VITE_EMAILJS_TEMPLATE_ID=
 VITE_EMAILJS_PUBLIC_KEY=
 ```
 
-Les trois variables EmailJS sont facultatives. Sans elles, l’action d’envoi explique la configuration manquante; les exports de billet restent disponibles. Consulte [docs/EMAIL_SETUP.md](docs/EMAIL_SETUP.md) pour configurer le service et son modèle.
+Les variables `VITE_EMAILJS_*` servent uniquement aux envois directs en développement. En production, la fonction Node Vercel lit les variables `EMAILJS_*` côté serveur; elles ne sont pas intégrées au bundle du frontend. Consulte [docs/EMAIL_SETUP.md](docs/EMAIL_SETUP.md) pour configurer le service, son modèle et chaque environnement.
 
 ## Limites connues
 

@@ -26,4 +26,5 @@ export type HTTPResponse<T> = {
     success: boolean,
     message: string,
     body: T,
+    status: number
 }

@@ -212,6 +212,7 @@ export async function apiFetch<T>(
         success: response.ok,
         message: response.statusText,
         body: undefined,
+        status: 204
       };
     }
 
@@ -225,6 +226,7 @@ export async function apiFetch<T>(
       success: response.ok,
       message: response.statusText,
       body: (staticFlightRequest ? filterStaticFlights(payload, getRequestSearchParams(input, params)) : payload) as T | undefined,
+      status: response.status
     };
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {

@@ -1,38 +1,53 @@
 # Configuration des e-mails de confirmation
 
-PlaneT utilise l’API navigateur d’EmailJS pour envoyer un modèle de confirmation sans déployer de serveur d’e-mail. Le bouton de confirmation fonctionne uniquement après configuration des trois identifiants publics ci-dessous.
+PlaneT utilise le SDK navigateur officiel EmailJS (`@emailjs/browser`) en développement. En production, l'envoi et la vérification de configuration passent par `api/proxy.ts`, une fonction Node Vercel qui lit ses propres variables d'environnement.
 
-## Ce qu’il faut créer dans EmailJS
+## Préparer EmailJS
 
-1. Créer un compte EmailJS et connecter un service e-mail.
-2. Créer un modèle de confirmation. Configurer le destinataire du modèle avec `{{to_email}}`.
-3. Dans le corps du modèle, insérer les variables souhaitées :
-
+1. Créez un compte EmailJS et connectez un service e-mail.
+2. Créez un modèle de confirmation et configurez son destinataire avec `{{email}}`.
+3. Vous pouvez utiliser les variables suivantes dans l'objet ou le corps du modèle :
    - `{{traveler_name}}`
    - `{{booking_reference}}`
    - `{{flight_route}}`
    - `{{departure_date}}`
    - `{{passengers_count}}`
    - `{{total_price}}`
+   - `{{priceHT}}`
+4. Relevez l'identifiant du service, celui du modèle et la clé publique dans le tableau de bord EmailJS.
 
-4. Copier l’identifiant du service, l’identifiant du modèle et la clé publique depuis le tableau de bord EmailJS.
-5. Les ajouter dans `.env.local` à la racine du projet :
+## Variables selon l'environnement
 
-   ```dotenv
-   VITE_EMAILJS_SERVICE_ID=service_xxxxxxx
-   VITE_EMAILJS_TEMPLATE_ID=template_xxxxxxx
-   VITE_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxx
-   ```
+En développement, ajoutez les variables dans `.env.local` à la racine :
 
-6. Redémarrer le serveur Vite. Les modifications des variables `VITE_` ne sont prises en compte qu’au démarrage.
-7. Créer une réservation de démonstration, puis cliquer sur **Send Confirmation** sur l’écran de confirmation.
+```dotenv
+VITE_EMAILJS_SERVICE_ID=service_xxxxxxx
+VITE_EMAILJS_TEMPLATE_ID=template_xxxxxxx
+VITE_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxx
+VITE_EMAILJS_BLOCKED_EMAILS=foo@example.com,bar@example.com
+```
 
-## Sécurité et limites
+En production, ajoutez les variables sans préfixe `VITE_` aux variables d'environnement du projet Vercel :
 
-La clé publique EmailJS est conçue pour être utilisée côté navigateur; elle n’est pas un secret. N’ajoutez jamais une clé privée ou un mot de passe SMTP dans une variable `VITE_`. Restreindre le domaine autorisé, activer les protections disponibles dans le compte EmailJS et utiliser un modèle prédéfini. Une intégration côté navigateur expose l’identifiant public et peut être abusée si le compte n’est pas configuré avec des garde-fous.
+```dotenv
+EMAILJS_SERVICE_ID=service_xxxxxxx
+EMAILJS_TEMPLATE_ID=template_xxxxxxx
+EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxx
+EMAILJS_BLOCKED_EMAILS=foo@example.com,bar@example.com
+```
 
-Le code envoie une requête à `https://api.emailjs.com/api/v1.0/email/send`, sans joindre le fichier de billet. L’export du billet demeure une action distincte contrôlée par l’utilisateur. Le forfait gratuit est affiché par EmailJS avec 200 requêtes mensuelles et deux modèles; les limites et conditions peuvent changer. Voir la [documentation React EmailJS](https://www.emailjs.com/docs/examples/reactjs/), la [FAQ sur la clé publique](https://www.emailjs.com/docs/faq/is-it-okay-to-expose-my-public-key/) et les [tarifs](https://www.emailjs.com/pricing/).
+Ces valeurs sont lues par `process.env` dans la fonction Vercel et ne sont pas injectées dans le bundle client. Le `GET /api/proxy` répond uniquement si la configuration requise est présente; il ne renvoie aucune valeur EmailJS. Le `POST /api/proxy` envoie le modèle via l'API EmailJS. Pour tester cette fonction localement, utilisez Vercel CLI (`vercel dev`) et définissez les variables serveur dans l'environnement local.
 
-## Si une intervention dans le compte est nécessaire
+## Protections activées
 
-L’utilisateur doit créer le service et le modèle dans son propre compte EmailJS, puis ajouter les trois valeurs ci-dessus à son fichier `.env.local`. Ne partage pas la clé privée. Une fois les valeurs locales configurées, le bouton envoie le modèle et signale le succès ou l’erreur dans l’interface.
+- En développement, `blockHeadless: true` et le `limitRate` du SDK EmailJS sont initialisés avant le premier envoi; le délai est de 10 secondes.
+- La liste `VITE_EMAILJS_BLOCKED_EMAILS` bloque les destinataires configurés en développement.
+- En production, le proxy bloque les adresses de `EMAILJS_BLOCKED_EMAILS` et applique un délai de 10 secondes par adresse IP. Cette limitation en mémoire peut être réinitialisée lorsqu'une instance serverless est remplacée; utilisez un stockage partagé si un quota strict entre instances est requis.
+
+Les protections côté navigateur en développement ne remplacent pas les restrictions à configurer dans EmailJS. Les variables non préfixées sont réservées à la fonction serveur; ne les définissez pas comme variables `VITE_` et ne placez jamais de clé privée ou de mot de passe SMTP dans les variables client.
+
+Le courriel ne joint pas le billet téléchargé. Le forfait EmailJS et ses quotas peuvent évoluer; consultez la [documentation d'initialisation](https://www.emailjs.com/docs/sdk/init/), les [options du SDK](https://www.emailjs.com/docs/sdk/options/) et les [tarifs EmailJS](https://www.emailjs.com/pricing/).
+
+## Intervention requise dans le compte
+
+Le propriétaire du compte EmailJS doit créer le service et le modèle. Pour le développement, les valeurs `VITE_EMAILJS_*` sont nécessaires au serveur Vite. Pour la production, définissez `EMAILJS_SERVICE_ID`, `EMAILJS_TEMPLATE_ID`, `EMAILJS_PUBLIC_KEY` et, facultativement, `EMAILJS_BLOCKED_EMAILS` dans les variables du projet Vercel; elles sont lues à l'exécution par la fonction Node.

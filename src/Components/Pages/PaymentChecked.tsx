@@ -25,10 +25,19 @@ const PaymentChecked = () => {
     const [booking, setBooking] = useState<CachedBooking | null>(null);
     const [downloadFormat, setDownloadFormat] = useState<DownloadFormat>('json');
     const [isSending, setIsSending] = useState(false);
+    const [mailerConfigured, setMailerConfigured] = useState<boolean | null>(null);
     const pageRef = useRef<HTMLDivElement>(null);
     const successBadgeRef = useRef<HTMLDivElement>(null);
     const successCircleRef = useRef<SVGCircleElement>(null);
     const successCheckRef = useRef<SVGPathElement>(null);
+
+    useEffect(() => {
+        let active = true;
+        void isEmailMailerConfigured().then((configured) => {
+            if (active) setMailerConfigured(configured);
+        });
+        return () => { active = false; };
+    }, []);
 
     useLayoutEffect(() => {
         const page = pageRef.current;
@@ -129,7 +138,7 @@ const PaymentChecked = () => {
                     </svg>
                 </div>
                 <h2 data-payment-reveal className="text-3xl sm:text-4xl font-bold playfair-display">Booking confirmed!</h2>
-                <p className="text-gray-600 mt-4">Your booking confirmation is ready. {user ? 'Your reservation is saved in this browser.' : 'Sign in before booking to save this reservation in your account.'} {isEmailMailerConfigured() ? 'Send the confirmation by email using the button below.' : 'Email confirmation is available after EmailJS is configured.'}</p>
+                <p className="text-gray-600 mt-4">Your booking confirmation is ready. {user ? 'Your reservation is saved in this browser.' : 'Sign in before booking to save this reservation in your account.'} {mailerConfigured ? 'Send the confirmation by email using the button below.' : 'Email confirmation is available after EmailJS is configured.'}</p>
             </div>
 
             <div data-payment-reveal className='my-6 mb-10 rounded-2xl border border-(--sb-blue-250) bg-blue-50 p-5 sm:p-10 shadow-sm text-gray-600'>
@@ -145,7 +154,7 @@ const PaymentChecked = () => {
             <div data-payment-reveal className="w-full grid grid-cols-1 lg:grid-cols-2 gap-4 mt-5">
                 <Button onClick={handleSendConfirmation} disabled={isSending || !booking} className="py-2 rounded-lg border border-gray-400 shadow-md flex items-center gap-3 justify-center hover:scale-98 duration-200 disabled:opacity-50">
                    <Mail width={17}/> 
-                   <p>{isSending ? 'Sending…' : isEmailMailerConfigured() ? 'Send Confirmation' : 'Configure Email Confirmation'}</p>
+                   <p>{isSending ? 'Sending…' : mailerConfigured === null ? 'Checking email setup…' : mailerConfigured ? 'Send Confirmation' : 'Configure Email Confirmation'}</p>
                 </Button>
                 <div className="relative min-w-0">
                     <Button
